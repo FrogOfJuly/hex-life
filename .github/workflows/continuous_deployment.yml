@@ -32,7 +32,7 @@ jobs:
         run: wasm-pack build --target web --out-name web --dev --out-dir docs/pkg
 
       - name: Remove gitignore
-        run: rm web/.gitignore
+        run: rm docs/.gitignore
 
       - name: Peek
         run: tree -L 3
