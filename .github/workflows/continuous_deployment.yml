@@ -29,10 +29,10 @@ jobs:
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
         
       - name: Build
-        run: wasm-pack build --target web --out-name web --dev --out-dir docs/pkg
+        run: wasm-pack build --target web --out-name web --dev --out-dir web/pkg
 
       - name: Remove gitignore
-        run: rm docs/pkg/.gitignore
+        run: rm web/pkg/.gitignore
 
       - name: Peek
         run: tree -L 3
@@ -42,5 +42,5 @@ jobs:
         if: github.ref == 'refs/heads/master'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
+          publish_dir: ./web
           keep_files: true
