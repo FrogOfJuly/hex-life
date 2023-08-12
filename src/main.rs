@@ -165,7 +165,8 @@ pub fn main() {
             // Render the triangle with the color material which uses the per vertex colors defined at construction
             .render(
                 &camera, &model, &[]
-            );
+            )
+            .write(|| gui.render());
 
         game.next_tick();
         if !pause{
