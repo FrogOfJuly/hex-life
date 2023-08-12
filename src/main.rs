@@ -125,11 +125,12 @@ pub fn main() {
                             v.randomize_life(0.5);
                         })
                     }
-                    ui.horizontal_centered(|ui|{
-                        ui.label("Use arrows to rotate the camera");
-                        ui.label("Use Enter to pause/unpause");
-                    });
                     ui.separator();
+                    
+                    ui.label("Use arrows to rotate the camera");
+                    ui.label("Use Enter to pause/unpause");
+                    
+                    
                 });
             },
         );
