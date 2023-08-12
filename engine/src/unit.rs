@@ -54,11 +54,11 @@ impl UnitData {
         self
     }
 
-    pub fn mark(&mut self){
+    pub fn mark(&mut self) {
         self.marked = true;
     }
 
-    pub fn unmark(&mut self){
+    pub fn unmark(&mut self) {
         self.marked = false;
     }
 
@@ -86,9 +86,14 @@ impl UnitData {
             Grassness::Poor => data::SCORCHD_COLOR,
         };
 
-        let marked_color = [1.0, 0.0, 0.0, 0.3];
+        let color = merge_colors(&base_color, &grass_color);
+        let marked_color = [1.0, 0.0, 0.0, 0.2];
 
-        merge_colors(&marked_color, &merge_colors(&base_color, &grass_color))
+        if self.marked {
+            merge_colors(&marked_color, &color)
+        } else {
+            color
+        }
     }
 }
 
