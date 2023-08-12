@@ -146,14 +146,16 @@ pub fn main() {
                     ui.label("Use arrows to rotate the camera");
                     ui.label("Use Enter to pause/unpause");
 
-                    ui.add( 
-                        egui::TextEdit::multiline(&mut format!("{:?}", msges).to_owned()) 
-                            .font(egui::TextStyle::Monospace) // for cursor height 
-                            .code_editor() 
-                            .desired_rows(1) 
-                            .lock_focus(true) , 
-                    );
-                    ui.add(egui::Hyperlink::from_label_and_url("Meeeh", format!("{:?}", msges).to_owned()));
+                    if ui.add(Label::new(RichText::new(format!("{:?}", msges).to_owned()).monospace()).sense(Sense::click())).clicked() {
+                        
+                    }
+                    // ui.add( 
+                    //     egui::TextEdit::multiline(&mut format!("{:?}", msges).to_owned()) 
+                    //         .font(egui::TextStyle::Monospace) // for cursor height 
+                    //         .code_editor() 
+                    //         .desired_rows(1) 
+                    //         .lock_focus(true) , 
+                    // );
                 });
 
                 SidePanel::left("Patterns").show(gui_context, |ui|{
