@@ -1,8 +1,15 @@
+use engine::game::SphericalIndex;
 use three_d::*;
 
-fn lnlt_to_unit_sphere(ltln: &h3o::LatLng) -> (f64, f64, f64) {
+fn lnlt_to_xyz(ltln: &h3o::LatLng) -> (f64, f64, f64) {
     let (lt, ln) = (ltln.lat_radians(), ltln.lng_radians());
     (lt.cos() * ln.cos(), lt.cos() * ln.sin(), lt.sin())
+}
+
+fn xyz_to_lnlt((x, y, z): &(f64, f64, f64)) -> h3o::LatLng {
+    let lat = z.asin();
+    let lng = y.atan2(*x);
+    h3o::LatLng::from_radians(lat, lng).unwrap()
 }
 
 fn boundary_to_ordered_vtxes(
@@ -16,9 +23,9 @@ fn boundary_to_ordered_vtxes(
         .zip([h3o::LatLng::from(*index)].into_iter().cycle())
         .flat_map(|((i, j), c)| {
             [
-                lnlt_to_unit_sphere(i),
-                lnlt_to_unit_sphere(j),
-                lnlt_to_unit_sphere(&c),
+                lnlt_to_xyz(i),
+                lnlt_to_xyz(j),
+                lnlt_to_xyz(&c),
             ]
             .into_iter()
         })
@@ -132,21 +139,6 @@ pub fn main() {
             },
         );
 
-
-        frame_input.events.iter().for_each(|event|{
-            let speed = 0.5;
-            if let Event::KeyPress { kind, ..} = event {
-                match kind {
-                    Key::ArrowDown => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, 0.0, -speed),
-                    Key::ArrowLeft => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, -speed, 0.0),
-                    Key::ArrowRight => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, speed, 0.0),
-                    Key::ArrowUp => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, 0.0, speed),
-                    Key::Enter => {pause = !pause;},
-                    _ => ()
-                }
-            }
-        });
-
         // Ensure the viewport matches the current window viewport which changes if the window is resized
         camera.set_viewport(frame_input.viewport);
 
@@ -159,6 +151,30 @@ pub fn main() {
             colors : Some(colors),
             ..Default::default()
         }), ColorMaterial::default());
+
+
+        frame_input.events.iter().for_each(|event|{
+            let speed = 0.5;
+            if let Event::KeyPress { kind, ..} = event {
+                match kind {
+                    Key::ArrowDown => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, 0.0, -speed),
+                    Key::ArrowLeft => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, -speed, 0.0),
+                    Key::ArrowRight => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, speed, 0.0),
+                    Key::ArrowUp => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, 0.0, speed),
+                    Key::Enter => {pause = !pause;},
+                    _ => ()
+                }
+            }else if let Event::MousePress { button : MouseButton::Left, position, ..} = event{
+                if let Some(Vector3{ x, y, z }) = renderer::pick(&context, &camera, position, &model.geometry){
+                    let index = xyz_to_lnlt(&(x as f64, y as f64, z as f64)).to_cell(resolution);
+
+                    let cell = game.present.0.get_mut(&SphericalIndex(index)).unwrap();
+
+                    *cell = cell.mark();
+                }
+            }
+        });
+
         // Get the screen render target to be able to render something on the screen
         frame_input.screen()
             // Clear the color and depth of the screen render target
