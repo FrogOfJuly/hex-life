@@ -111,29 +111,26 @@ pub fn main() {
                 use three_d::egui::*;
                 TopBottomPanel::bottom("Controls").show(gui_context, |ui| {
                     ui.label("Controls");
-                    ui.centered(|ui|{
-                        
-                        if ui.add(Button::new(if pause {"Run"} else {"Pause"})).clicked(){
-                            pause = !pause;
-                        }
-
-                        if ui.add(Button::new("Clear")).clicked(){
-                            game.present.0.iter_mut().for_each(|(_k, v)| {
-                                v.inhabited = false;
-                            })
-                        }
-
-                        if ui.add(Button::new("Fill")).clicked(){
-                            game.present.0.iter_mut().for_each(|(_k, v)| {
-                                v.randomize_life(0.5);
-                            })
-                        }
-
-                        ui.separator();
-
+                    
+                    if ui.add(Button::new(if pause {"Run"} else {"Pause"})).clicked(){
+                        pause = !pause;
+                    }
+                    if ui.add(Button::new("Clear")).clicked(){
+                        game.present.0.iter_mut().for_each(|(_k, v)| {
+                            v.inhabited = false;
+                        })
+                    }
+                    if ui.add(Button::new("Fill")).clicked(){
+                        game.present.0.iter_mut().for_each(|(_k, v)| {
+                            v.randomize_life(0.5);
+                        })
+                    }
+                    ui.horizontal_centered(|ui|{
                         ui.label("Use arrows to rotate the camera");
                         ui.label("Use Enter to pause/unpause");
-                })});
+                    });
+                    ui.separator();
+                });
             },
         );
 
