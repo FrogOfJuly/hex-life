@@ -110,7 +110,7 @@ pub fn main() {
             |gui_context| {
                 use three_d::egui::*;
                 SidePanel::left("Controls").show(gui_context, |ui| {
-                    ui.vertical_centered(|ui|{
+                    ui.centered(|ui|{
                         ui.label("Controls");
                         if ui.add(Button::new(if pause {"Run"} else {"Pause"})).clicked(){
                             pause = !pause;
