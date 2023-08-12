@@ -102,20 +102,6 @@ pub fn main() {
     window.render_loop(
         move |mut frame_input| // Begin a new frame with an updated frame input
     {
-        frame_input.events.iter().for_each(|event|{
-            let speed = 0.5;
-            if let Event::KeyPress { kind, ..} = event {
-                match kind {
-                    Key::ArrowDown => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, 0.0, -speed),
-                    Key::ArrowLeft => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, -speed, 0.0),
-                    Key::ArrowRight => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, speed, 0.0),
-                    Key::ArrowUp => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, 0.0, speed),
-                    Key::Enter => {pause = !pause;},
-                    _ => ()
-                }
-            }
-        });
-
         gui.update(
             &mut frame_input.events,
             frame_input.accumulated_time,
@@ -140,12 +126,25 @@ pub fn main() {
                         game.present.0.iter_mut().for_each(|(_k, v)| {
                             v.randomize_life(0.5);
                         })
-                    } 
-
-                    
+                    }
                 });
             },
         );
+
+
+        // frame_input.events.iter().for_each(|event|{
+        //     let speed = 0.5;
+        //     if let Event::KeyPress { kind, ..} = event {
+        //         match kind {
+        //             Key::ArrowDown => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, 0.0, -speed),
+        //             Key::ArrowLeft => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, -speed, 0.0),
+        //             Key::ArrowRight => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, speed, 0.0),
+        //             Key::ArrowUp => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, 0.0, speed),
+        //             Key::Enter => {pause = !pause;},
+        //             _ => ()
+        //         }
+        //     }
+        // });
 
         // Ensure the viewport matches the current window viewport which changes if the window is resized
         camera.set_viewport(frame_input.viewport);
