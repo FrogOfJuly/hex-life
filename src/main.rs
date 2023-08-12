@@ -152,7 +152,9 @@ pub fn main() {
                             .code_editor() 
                             .desired_rows(1) 
                             .lock_focus(true) , 
-                    ); 
+                    ).context_menu(|ui|{
+                        ui.output_mut(|o| o.copied_text = format!("{:?}", msges).to_owned());
+                    }); 
                 });
 
                 SidePanel::left("Patterns").show(gui_context, |ui|{
