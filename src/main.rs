@@ -127,24 +127,28 @@ pub fn main() {
                             v.randomize_life(0.5);
                         })
                     }
+
+                    ui.separator();
+
+                    ui.label("Use arrows to rotate the camera");
                 });
             },
         );
 
 
-        // frame_input.events.iter().for_each(|event|{
-        //     let speed = 0.5;
-        //     if let Event::KeyPress { kind, ..} = event {
-        //         match kind {
-        //             Key::ArrowDown => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, 0.0, -speed),
-        //             Key::ArrowLeft => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, -speed, 0.0),
-        //             Key::ArrowRight => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, speed, 0.0),
-        //             Key::ArrowUp => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, 0.0, speed),
-        //             Key::Enter => {pause = !pause;},
-        //             _ => ()
-        //         }
-        //     }
-        // });
+        frame_input.events.iter().for_each(|event|{
+            let speed = 0.5;
+            if let Event::KeyPress { kind, ..} = event {
+                match kind {
+                    Key::ArrowDown => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, 0.0, -speed),
+                    Key::ArrowLeft => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, -speed, 0.0),
+                    Key::ArrowRight => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, speed, 0.0),
+                    Key::ArrowUp => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, 0.0, speed),
+                    Key::Enter => {pause = !pause;},
+                    _ => ()
+                }
+            }
+        });
 
         // Ensure the viewport matches the current window viewport which changes if the window is resized
         camera.set_viewport(frame_input.viewport);
