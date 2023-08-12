@@ -195,6 +195,7 @@ pub fn main() {
     // Create a window (a canvas on web)
     let window = Window::new(WindowSettings {
         title: "Life".to_string(),
+        max_size: Some((900, 900)),
         ..Default::default()
     })
     .unwrap();
