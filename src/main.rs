@@ -118,12 +118,12 @@ pub fn main() {
                     if ui.add(Button::new("Clear")).clicked(){
                         game.present.0.iter_mut().for_each(|(_k, v)| {
                             v.inhabited = false;
-                        })
+                        });
                     }
                     if ui.add(Button::new("Fill")).clicked(){
                         game.present.0.iter_mut().for_each(|(_k, v)| {
                             v.randomize_life(0.5);
-                        })
+                        });
                     }
 
                     ui.label("Use arrows to rotate the camera");
