@@ -87,9 +87,10 @@ impl UnitData {
         };
 
         let color = merge_colors(&base_color, &grass_color);
-        let marked_color = [1.0, 0.0, 0.0, 0.2];
+        
 
         if self.marked {
+            let marked_color = [1.0, 0.0, 0.0, 0.1];
             merge_colors(&marked_color, &color)
         } else {
             color
