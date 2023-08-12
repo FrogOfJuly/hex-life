@@ -2,3 +2,4 @@
 /web/pkg
 /web/node_modules
 /web/package-lock.json
+/.DS_Store
