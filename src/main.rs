@@ -106,6 +106,7 @@ pub fn main() {
     });
 
     let mut pause = true;
+    let mut msges = vec![];
 
     let patterns = HashMap::from([
         ("Single Cell", 0.4),
@@ -144,6 +145,8 @@ pub fn main() {
 
                     ui.label("Use arrows to rotate the camera");
                     ui.label("Use Enter to pause/unpause");
+
+                    ui.label(format!("{:?}", msges));
                 });
 
                 SidePanel::left("Patterns").show(gui_context, |ui|{
@@ -189,10 +192,14 @@ pub fn main() {
                     game.present.0.get_mut(&SphericalIndex(index)).unwrap().mark();
                     mark_put = true;
 
-                    println!("Marked: {:?}", {
+                    
+                    let msg = format!("{:?}", {
                         let coords = h3o::LatLng::from(index);
-                        (coords.lat_radians(), coords.lng_radians())
-                    })
+                        (coords.lat_radians().to_string()
+                        , coords.lng_radians().to_string())
+                    });
+
+                    msges.push(msg);
                 }
             }
         });
