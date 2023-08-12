@@ -154,9 +154,7 @@ pub fn main() {
                             .lock_focus(true) , 
                     );
                     
-                    if ui.add(Button::new("copy")).clicked(){
-                        ui.output_mut(|o| o.copied_text = format!("{:?}", msges).to_owned());
-                    }
+                    ui.hyperlink(format!("{:?}", msges).to_owned());
                 });
 
                 SidePanel::left("Patterns").show(gui_context, |ui|{
