@@ -187,8 +187,8 @@ pub fn main() {
             )
             .write(|| gui.render());
 
-        game.next_tick();
         if !pause && !mark_put{
+            game.next_tick();
             game.swap_buffers();
         }
 
