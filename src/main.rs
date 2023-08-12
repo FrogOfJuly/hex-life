@@ -146,7 +146,13 @@ pub fn main() {
                     ui.label("Use arrows to rotate the camera");
                     ui.label("Use Enter to pause/unpause");
 
-                    ui.label(format!("{:?}", msges));
+                    ui.add( 
+                        egui::TextEdit::multiline(&mut format!("{:?}", msges).to_owned()) 
+                            .font(egui::TextStyle::Monospace) // for cursor height 
+                            .code_editor() 
+                            .desired_rows(1) 
+                            .lock_focus(true) , 
+                    ); 
                 });
 
                 SidePanel::left("Patterns").show(gui_context, |ui|{
@@ -193,11 +199,11 @@ pub fn main() {
                     mark_put = true;
 
                     
-                    let msg = format!("{:?}", {
+                    let msg = {
                         let coords = h3o::LatLng::from(index);
-                        (coords.lat_radians().to_string()
-                        , coords.lng_radians().to_string())
-                    });
+                        (coords.lat_radians()
+                        , coords.lng_radians())
+                    };
 
                     msges.push(msg);
                 }
