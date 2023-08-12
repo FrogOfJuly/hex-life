@@ -109,29 +109,30 @@ pub fn main() {
             frame_input.device_pixel_ratio,
             |gui_context| {
                 use three_d::egui::*;
-                TopBottomPanel::bottom("Controls").show(gui_context, |ui| {
-                    use three_d::egui::*;
-                    ui.label("Controls");
-                    if ui.add(Button::new(if pause {"Run"} else {"Pause"})).clicked(){
-                        pause = !pause;
-                    }
+                SidePanel::left("Controls").show(gui_context, |ui| {
+                    ui.vertical_centered(|ui|{
+                        ui.label("Controls");
+                        if ui.add(Button::new(if pause {"Run"} else {"Pause"})).clicked(){
+                            pause = !pause;
+                        }
 
-                    if ui.add(Button::new("Clear")).clicked(){
-                        game.present.0.iter_mut().for_each(|(_k, v)| {
-                            v.inhabited = false;
-                        })
-                    }
+                        if ui.add(Button::new("Clear")).clicked(){
+                            game.present.0.iter_mut().for_each(|(_k, v)| {
+                                v.inhabited = false;
+                            })
+                        }
 
-                    if ui.add(Button::new("Fill")).clicked(){
-                        game.present.0.iter_mut().for_each(|(_k, v)| {
-                            v.randomize_life(0.5);
-                        })
-                    }
+                        if ui.add(Button::new("Fill")).clicked(){
+                            game.present.0.iter_mut().for_each(|(_k, v)| {
+                                v.randomize_life(0.5);
+                            })
+                        }
 
-                    ui.separator();
+                        ui.separator();
 
-                    ui.label("Use arrows to rotate the camera");
-                });
+                        ui.label("Use arrows to rotate the camera");
+                        ui.label("Use Enter to pause/unpause");
+                })});
             },
         );
 
