@@ -153,8 +153,7 @@ pub fn main() {
                             .desired_rows(1) 
                             .lock_focus(true) , 
                     );
-                    
-                    ui.hyperlink(format!("{:?}", msges).to_owned());
+                    ui.add(egui::Hyperlink::from_label_and_url("Meeeh", format!("{:?}", msges).to_owned()));
                 });
 
                 SidePanel::left("Patterns").show(gui_context, |ui|{
