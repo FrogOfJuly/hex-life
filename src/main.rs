@@ -109,7 +109,7 @@ pub fn main() {
             frame_input.device_pixel_ratio,
             |gui_context| {
                 use three_d::egui::*;
-                SidePanel::left("Controls").show(gui_context, |ui| {
+                TopBottomPanel::bottom("Controls").show(gui_context, |ui| {
                     ui.centered(|ui|{
                         ui.label("Controls");
                         if ui.add(Button::new(if pause {"Run"} else {"Pause"})).clicked(){
