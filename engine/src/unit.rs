@@ -13,6 +13,7 @@ pub enum Grassness {
 pub struct UnitData {
     pub inhabited: bool,
     pub grass: Grassness,
+    pub marked: bool,
 }
 
 impl UnitData {
@@ -24,6 +25,7 @@ impl UnitData {
         Self {
             inhabited: false,
             grass: Grassness::Usual,
+            marked: false,
         }
     }
 
@@ -40,6 +42,24 @@ impl UnitData {
     pub fn add_grass(mut self) -> Self {
         self.grass = self.grass.next().unwrap_or(self.grass);
         self
+    }
+
+    pub fn marked(mut self) -> Self {
+        self.marked = true;
+        self
+    }
+
+    pub fn unmarked(mut self) -> Self {
+        self.marked = false;
+        self
+    }
+
+    pub fn mark(&mut self){
+        self.marked = true;
+    }
+
+    pub fn unmark(&mut self){
+        self.marked = false;
     }
 
     pub fn remove_grass(mut self) -> Self {
@@ -66,7 +86,9 @@ impl UnitData {
             Grassness::Poor => data::SCORCHD_COLOR,
         };
 
-        merge_colors(&base_color, &grass_color)
+        let marked_color = [1.0, 0.0, 0.0, 0.3];
+
+        merge_colors(&marked_color, &merge_colors(&base_color, &grass_color))
     }
 }
 
