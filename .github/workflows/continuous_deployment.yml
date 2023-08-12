@@ -25,4 +25,4 @@ jobs:
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
         
       - name: Build
-        run: wasm-pack build --target web --out-name web --dev
+        run: wasm-pack build --target web --out-name web --dev --out-dir docs/pkg

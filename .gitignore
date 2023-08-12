@@ -1,5 +1,5 @@
 /target
-/web/pkg
-/web/node_modules
-/web/package-lock.json
+/doc/pkg
+/doc/node_modules
+/doc/package-lock.json
 /.DS_Store
