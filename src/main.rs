@@ -152,6 +152,7 @@ pub fn main() {
             ..Default::default()
         }), ColorMaterial::default());
 
+        let mut mark_put = false;
 
         frame_input.events.iter().for_each(|event|{
             let speed = 0.5;
@@ -170,7 +171,8 @@ pub fn main() {
 
                     let cell = game.present.0.get_mut(&SphericalIndex(index)).unwrap();
 
-                    *cell = cell.mark();
+                    *cell = (*cell).mark();
+                    mark_put = true;
                 }
             }
         });
@@ -186,7 +188,7 @@ pub fn main() {
             .write(|| gui.render());
 
         game.next_tick();
-        if !pause{
+        if !pause && !mark_put{
             game.swap_buffers();
         }
 
