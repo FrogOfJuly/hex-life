@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use engine::game::SphericalIndex;
 use three_d::*;
 
@@ -105,6 +107,13 @@ pub fn main() {
 
     let mut pause = true;
 
+    let patterns = HashMap::from([
+        ("Single Cell", 0.4),
+        ("Venus", 0.7),
+        ("Earth", 1.0),
+        ("Mars", 1.5),
+    ]);
+
     // Start the main render loop
     window.render_loop(
         move |mut frame_input| // Begin a new frame with an updated frame input
@@ -135,6 +144,14 @@ pub fn main() {
 
                     ui.label("Use arrows to rotate the camera");
                     ui.label("Use Enter to pause/unpause");
+                });
+
+                SidePanel::left("Patterns").show(gui_context, |ui|{
+                    ui.label("Patterns");
+
+                    if ui.add(Button::new("Single cell")).clicked(){
+
+                    }
                 });
             },
         );
@@ -171,6 +188,11 @@ pub fn main() {
 
                     game.present.0.get_mut(&SphericalIndex(index)).unwrap().mark();
                     mark_put = true;
+
+                    println!("Marked: {:?}", {
+                        let coords = h3o::LatLng::from(index);
+                        (coords.lat_radians(), coords.lng_radians())
+                    })
                 }
             }
         });
