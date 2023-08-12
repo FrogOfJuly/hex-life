@@ -110,8 +110,9 @@ pub fn main() {
             |gui_context| {
                 use three_d::egui::*;
                 TopBottomPanel::bottom("Controls").show(gui_context, |ui| {
+                    ui.label("Controls");
                     ui.centered(|ui|{
-                        ui.label("Controls");
+                        
                         if ui.add(Button::new(if pause {"Run"} else {"Pause"})).clicked(){
                             pause = !pause;
                         }
