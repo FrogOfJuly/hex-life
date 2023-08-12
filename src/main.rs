@@ -112,7 +112,7 @@ pub fn main() {
                 SidePanel::left("Controls").show(gui_context, |ui| {
                     use three_d::egui::*;
                     ui.heading("Controls");
-                    if ui.add(Button::new("Pause")).clicked(){
+                    if ui.add(Button::new(if pause {"Run"} else {"Pause"})).clicked(){
                         pause = !pause;
                     }
 
