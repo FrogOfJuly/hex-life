@@ -169,9 +169,7 @@ pub fn main() {
                 if let Some(Vector3{ x, y, z }) = renderer::pick(&context, &camera, position, &model.geometry){
                     let index = xyz_to_lnlt(&(x as f64, y as f64, z as f64)).to_cell(resolution);
 
-                    let cell = game.present.0.get_mut(&SphericalIndex(index)).unwrap();
-
-                    *cell = (*cell).mark();
+                    game.present.0.get_mut(&SphericalIndex(index)).unwrap().mark();
                     mark_put = true;
                 }
             }
