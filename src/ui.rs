@@ -26,7 +26,7 @@ impl GUIState {
 
         SidePanel::right("Controls").show(gui_context, |ui| {
             ui.label("Controls");
-            
+
             (0..10).for_each(|_| {
                 ui.label(" ");
             });
@@ -103,6 +103,12 @@ impl GUIState {
                             .into_iter()
                             .for_each(|u| u.add_life());
                     });
+            } else if let (three_d::MouseButton::Left, None) = (button, self.toggled_pattern) {
+                game.get_mut_unit(&index)
+                    .into_iter()
+                    .for_each(|u| u.marked = !u.marked);
+
+                log::info!("{:?}", index);
             } else if let three_d::MouseButton::Right = button {
                 game.get_mut_unit(&index)
                     .into_iter()
