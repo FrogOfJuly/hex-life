@@ -1,65 +1,7 @@
-use std::collections::HashMap;
-
-use engine::{game::SphericalIndex, pattern::Pattern};
 use three_d::*;
 
-fn lnlt_to_xyz(ltln: &h3o::LatLng) -> (f64, f64, f64) {
-    let (lt, ln) = (ltln.lat_radians(), ltln.lng_radians());
-    (lt.cos() * ln.cos(), lt.cos() * ln.sin(), lt.sin())
-}
-
-fn xyz_to_lnlt((x, y, z): &(f64, f64, f64)) -> h3o::LatLng {
-    let lat = z.asin();
-    let lng = y.atan2(*x);
-    h3o::LatLng::from_radians(lat, lng).unwrap()
-}
-
-fn boundary_to_ordered_vtxes(
-    game: &engine::game::Game,
-    index: &h3o::CellIndex,
-) -> std::vec::Vec<(three_d::Vector3<f64>, three_d::Srgba)> {
-    let boundary = index.boundary();
-    boundary
-        .iter()
-        .zip(boundary.iter().cycle().skip(1))
-        .zip([h3o::LatLng::from(*index)].into_iter().cycle())
-        .flat_map(|((i, j), c)| {
-            [
-                lnlt_to_xyz(i),
-                lnlt_to_xyz(j),
-                lnlt_to_xyz(&c),
-            ]
-            .into_iter()
-        })
-        .map(|(x, y, z)| Vector3 { x, y, z })
-        .zip(
-            {
-                let unit = game
-                    .present
-                    .0
-                    .get(&engine::game::SphericalIndex(*index))
-                    .unwrap();
-                let [r, g, b, a] = unit.compute_color();
-                let tr = |x: f32| {
-                    let f2 = x.min(1.0).max(0.0);
-                    if f2 == 1.0 {
-                        255
-                    } else {
-                        (f2 * 256.0) as u8
-                    }
-                };
-                [Srgba {
-                    r: tr(r),
-                    g: tr(g),
-                    b: tr(b),
-                    a: tr(a),
-                }]
-            }
-            .into_iter()
-            .cycle(),
-        )
-        .collect::<Vec<_>>()
-}
+#[path = "ui.rs"]
+mod ui;
 
 pub fn main() {
     // Create a window (a canvas on web)
@@ -86,190 +28,82 @@ pub fn main() {
 
     let mut gui = three_d::GUI::new(&context);
 
-    let mut game = engine::game::Game::new();
-    let resolution = h3o::Resolution::Two;
+    let mut gui_state = ui::GUIState::new();
 
-    let indecies = h3o::CellIndex::base_cells()
-        .flat_map(|index| index.children(resolution))
-        .collect::<Vec<_>>();
-
-    indecies.iter().for_each(|index| {
-        let mut unit = engine::unit::UnitData::new();
-        unit.randomize_life(0.5);
-
-        game.present
-            .0
-            .insert(engine::game::SphericalIndex(*index), unit);
-        game.future
-            .0
-            .insert(engine::game::SphericalIndex(*index), unit);
-    });
-
-    let mut pause = true;
-    let mut msges = vec![];
-
-    let patterns = {
-        let mut patterns : HashMap<&str, Box<dyn Fn() -> Pattern>> = HashMap::new();
-        
-        patterns.insert("Single cell", Box::new(Pattern::single_cell));
-        patterns.insert("Small flicker", Box::new(Pattern::small_flicker));
-        patterns.insert("Large flicker", Box::new(Pattern::large_flicker));
-        patterns.insert("Rotating trio", Box::new(Pattern::rotating_trio));
-        patterns.insert("Pulsating trio", Box::new(Pattern::pulsating_trio));
-        patterns.insert("Blob", Box::new(Pattern::blob));
-        patterns.insert("Big pulsar", Box::new(Pattern::big_pulsar));
-        
-
-        patterns
-    };
-    
+    let mut game = engine::game::Game::new().with_spawned_life();
 
     // Start the main render loop
-    window.render_loop(
-        move |mut frame_input| // Begin a new frame with an updated frame input
-    {
-
+    window.render_loop(move |mut frame_input| {
         gui.update(
             &mut frame_input.events,
             frame_input.accumulated_time,
             frame_input.viewport,
             frame_input.device_pixel_ratio,
-            |gui_context| {
-                use three_d::egui::*;
-
-                SidePanel::left("Patterns").show(gui_context, |ui|{
-                    ui.label("Controls");
-                    
-                    if ui.add(Button::new(if pause {"Run"} else {"Pause"})).clicked(){
-                        pause = !pause;
-                    }
-                    if ui.add(Button::new("Clear")).clicked(){
-                        game.present.0.iter_mut().for_each(|(_k, v)| {
-                            v.inhabited = false;
-                        });
-                    }
-                    if ui.add(Button::new("Clear marks")).clicked(){
-                        game.present.0.iter_mut().for_each(|(_k, v)| {
-                            v.unmark();
-                        });
-                        msges.clear();
-                    }
-                    if ui.add(Button::new("Fill")).clicked(){
-                        game.present.0.iter_mut().for_each(|(_k, v)| {
-                            v.randomize_life(0.5);
-                        });
-                    }
-
-                    ui.separator();
-
-                    ui.label("Patterns");
-
-                    patterns.iter().for_each(|(k, build_pattern)|{
-                        if ui.add(Button::new(k.to_string())).clicked(){
-                            let indecies = game.present.0.iter().filter(|(k, v)|
-                                v.marked
-                            ).map(|(k, _)| k.0)
-                            .flat_map(|index| build_pattern().as_cells(index))
-                            .collect::<Vec<_>>();
-
-                            indecies.iter().for_each(|index| {
-                                let unit = game.present.0.get_mut(&SphericalIndex(*index)).unwrap();
-                                unit.inhabited = true;
-                            });
-                        }
-                    });
-
-                    ui.separator();
-
-                    ui.label("Use arrows to rotate the camera");
-                    ui.label("Use Enter to pause/unpause");
-                    ui.label("");
-                    ui.label("Left-click on a sphere to mark cell");
-                    ui.label("Right-click to unmark");
-                    ui.label("Choose pattern to spawn it around of each marked cell");
-
-                    ui.separator();
-                    ui.separator();
-
-                    if ui.add(Button::new("Log marked")).clicked()
-                    {
-                        use log::info;
-                        info!("{:?}", msges);
-                    }
-
-                    
-                });
-            },
+            |gui_context| gui_state.draw_ui(gui_context, &mut game),
         );
-
-        // Ensure the viewport matches the current window viewport which changes if the window is resized
         camera.set_viewport(frame_input.viewport);
 
-        let (vtxes, colors)  = indecies.iter()
-                .flat_map(|index| boundary_to_ordered_vtxes(&game, index))
-                .unzip();
+        let (vtxes, colors) = game
+            .indecies
+            .iter()
+            .flat_map(|x| game.cell_to_colored_face_vtxes(x))
+            .map(|((x, y, z), color)| {
+                (Vector3 { x, y, z }, {
+                    let [r, g, b, a] = color.map(|x| {
+                        let f2 = x.min(1.0).max(0.0);
+                        if f2 == 1.0 {
+                            255
+                        } else {
+                            (f2 * 256.0) as u8
+                        }
+                    });
+                    Srgba { r, g, b, a }
+                })
+            })
+            .unzip();
 
-        let model = Gm::new(Mesh::new(&context, &CpuMesh{
-            positions : Positions::F64(vtxes) ,
-            colors : Some(colors),
-            ..Default::default()
-        }), ColorMaterial::default());
+        let model = Gm::new(
+            Mesh::new(
+                &context,
+                &CpuMesh {
+                    positions: Positions::F64(vtxes),
+                    colors: Some(colors),
+                    ..Default::default()
+                },
+            ),
+            ColorMaterial::default(),
+        );
 
-        let mut mark_put = false;
-        
+        gui_state.skip_frame = false;
 
-        frame_input.events.iter().for_each(|event|{
-            let speed = 0.5;
-            if let Event::KeyPress { kind, ..} = event {
-                match kind {
-                    Key::ArrowDown => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, 0.0, -speed),
-                    Key::ArrowLeft => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, -speed, 0.0),
-                    Key::ArrowRight => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, speed, 0.0),
-                    Key::ArrowUp => camera.rotate_around(&Vector3 { x: 0.0, y: 0.0, z: 0.0 }, 0.0, speed),
-                    Key::Enter => {pause = !pause;},
-                    _ => ()
-                }
-            }else if let Event::MousePress { button, position, ..} = event{
-                if let Some(Vector3{ x, y, z }) = renderer::pick(&context, &camera, position, &model.geometry){
-                    let index = xyz_to_lnlt(&(x as f64, y as f64, z as f64)).to_cell(resolution);
-                    let unit = game.present.0.get_mut(&SphericalIndex(index)).unwrap();
-
-                    match button{
-                        MouseButton::Left => unit.mark(),
-                        MouseButton::Right => unit.unmark(),
-                        _ => ()
-                    }
-                    
-                    mark_put = true;
-                    
-                    let msg = {
-                        let coords = h3o::LatLng::from(index);
-                        (coords.lat_radians()
-                        , coords.lng_radians())
-                    };
-
-                    msges.push(msg);
-                }
+        frame_input.events.iter().for_each(|event| match event {
+            Event::MousePress {
+                button, position, ..
+            } => gui_state.handle_mouse_clicks(
+                &model.geometry,
+                &mut camera,
+                &context,
+                &mut game,
+                (position, button),
+            ),
+            Event::KeyPress { kind, .. } => {
+                gui_state.handle_keyboard_event(&context, &mut camera, &mut game, kind)
             }
+            _ => (),
         });
 
-        // Get the screen render target to be able to render something on the screen
-        frame_input.screen()
-            // Clear the color and depth of the screen render target
+        frame_input
+            .screen()
             .clear(ClearState::color_and_depth(0.8, 0.8, 0.8, 1.0, 1.0))
-            // Render the triangle with the color material which uses the per vertex colors defined at construction
-            .render(
-                &camera, &model, &[]
-            )
+            .render(&camera, &model, &[])
             .write(|| gui.render());
 
-        if !pause && !mark_put {
+        if !gui_state.pause && !gui_state.skip_frame {
             game.next_tick();
             game.swap_buffers();
         }
 
         // Returns default frame output to end the frame
         FrameOutput::default()
-    },
-    );
+    });
 }

@@ -1,4 +1,4 @@
-use std::vec;
+use std::{collections::HashMap, vec};
 
 pub struct Pattern {
     resolution: h3o::Resolution,
@@ -73,7 +73,6 @@ impl Pattern {
     }
 
     pub fn large_flicker() -> Self {
-        //works?
         Self {
             resolution: h3o::Resolution::Two,
             cells: Self::from_probe(&[
@@ -116,5 +115,19 @@ impl Pattern {
                 (1.4456860505734481, 2.319685833801514),
             ]),
         }
+    }
+
+    pub fn create_pattern_map() -> HashMap<&'static str, Box<dyn Fn() -> Pattern>> {
+        let mut patterns: HashMap<&'static str, Box<dyn Fn() -> Pattern>> = HashMap::new();
+
+        patterns.insert("Single cell", Box::new(Pattern::single_cell));
+        patterns.insert("Small flicker", Box::new(Pattern::small_flicker));
+        patterns.insert("Large flicker", Box::new(Pattern::large_flicker));
+        patterns.insert("Rotating trio", Box::new(Pattern::rotating_trio));
+        patterns.insert("Pulsating trio", Box::new(Pattern::pulsating_trio));
+        patterns.insert("Blob", Box::new(Pattern::blob));
+        patterns.insert("Big pulsar", Box::new(Pattern::big_pulsar));
+
+        patterns
     }
 }

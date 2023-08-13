@@ -29,14 +29,22 @@ impl UnitData {
         }
     }
 
-    pub fn add_life(mut self) -> Self {
+    pub fn with_added_life(mut self) -> Self {
         self.inhabited = true;
         self
     }
 
-    pub fn remove_life(mut self) -> Self {
+    pub fn with_removed_life(mut self) -> Self {
         self.inhabited = false;
         self
+    }
+
+    pub fn add_life(&mut self) {
+        self.inhabited = true;
+    }
+
+    pub fn remove_life(&mut self) {
+        self.inhabited = false;
     }
 
     pub fn add_grass(mut self) -> Self {
@@ -44,12 +52,12 @@ impl UnitData {
         self
     }
 
-    pub fn marked(mut self) -> Self {
+    pub fn with_mark(mut self) -> Self {
         self.marked = true;
         self
     }
 
-    pub fn unmarked(mut self) -> Self {
+    pub fn with_removed_marked(mut self) -> Self {
         self.marked = false;
         self
     }
@@ -87,7 +95,6 @@ impl UnitData {
         };
 
         let color = merge_colors(&base_color, &grass_color);
-        
 
         if self.marked {
             let marked_color = [1.0, 0.0, 0.0, 0.9];

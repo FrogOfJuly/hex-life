@@ -13,7 +13,6 @@ members = [
 
 [dependencies]
 engine = { path = "engine" }
-h3o = "0.4.0"
 three-d = { version = "0.16.0", features = ["egui-gui"] }
 log = "0.4"
 console_log = "0.2"

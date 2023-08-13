@@ -484,7 +484,6 @@ dependencies = [
  "console_error_panic_hook",
  "console_log",
  "engine",
- "h3o",
  "log",
  "three-d",
  "wasm-bindgen",
