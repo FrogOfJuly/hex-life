@@ -3,6 +3,7 @@ use three_d::*;
 #[path = "ui.rs"]
 mod ui;
 
+#[allow(dead_code)]
 pub fn main() {
     let window = Window::new(WindowSettings {
         title: "Life".to_string(),
@@ -78,7 +79,7 @@ pub fn main() {
                 &mut game,
                 (&position, &button),
             ),
-            Event::KeyPress { kind, .. } => gui_state.handle_keyboard_event(&mut camera, &kind),
+            Event::KeyPress { kind, .. } => gui_state.handle_keyboard_event(&mut camera, *kind),
             _ => (),
         });
 

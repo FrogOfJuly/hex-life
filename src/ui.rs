@@ -1,8 +1,9 @@
+use std::collections::HashMap;
+
 pub struct GUIState {
     pub pause: bool,
     pub skip_frame: bool,
-    patterns: std::collections::HashMap<&'static str, Box<dyn Fn() -> engine::pattern::Pattern>>,
-    pub msges: Vec<(f64, f64)>,
+    patterns: HashMap<&'static str, Box<dyn engine::pattern::Pattern>>,
     pub toggled_pattern: Option<&'static str>,
 }
 
@@ -11,8 +12,7 @@ impl GUIState {
         Self {
             pause: true,
             skip_frame: false,
-            patterns: engine::pattern::Pattern::create_pattern_map(),
-            msges: vec![],
+            patterns: engine::pattern::create_pattern_map(),
             toggled_pattern: None,
         }
     }
@@ -35,10 +35,7 @@ impl GUIState {
             if ui.add(Button::new("Clear")).clicked() {
                 game.kill_everything();
             }
-            if ui.add(Button::new("Clear marks")).clicked() {
-                game.remove_marks();
-                self.msges.clear();
-            }
+
             if ui.add(Button::new("Fill")).clicked() {
                 game.spawn_life();
             }
@@ -66,20 +63,11 @@ impl GUIState {
 
             ui.separator();
 
-            ui.label("Use arrows to rotate the camera");
-            ui.label("Use Enter to pause/unpause");
+            ui.label("Use arrows or WASD to rotate the camera");
+            ui.label("Use Enter or Space to pause/unpause");
+            ui.label("Right-click on a sphere to kill a cell");
             ui.label("");
-            ui.label("Left-click on a sphere to mark cell");
-            ui.label("Right-click to unmark");
-            ui.label("Choose pattern to spawn it around of each marked cell");
-
-            ui.separator();
-            ui.separator();
-
-            if ui.add(Button::new("Log marked")).clicked() {
-                use log::info;
-                info!("{:?}", self.msges);
-            }
+            ui.label("Choose pattern and left-click on the sphere to spawn it");
         });
     }
 
@@ -100,32 +88,37 @@ impl GUIState {
             if let (three_d::MouseButton::Left, Some(toggled_pattern)) =
                 (button, self.toggled_pattern)
             {
-                self.patterns.get(toggled_pattern).unwrap()()
-                    .as_cells(index)
+                self.patterns
+                    .get(toggled_pattern)
+                    .unwrap()
+                    .as_cells(&index)
                     .iter()
                     .for_each(|index| {
                         game.get_mut_unit(index)
                             .into_iter()
                             .for_each(|u| u.add_life());
                     });
+            } else if let three_d::MouseButton::Right = button {
+                game.get_mut_unit(&index)
+                    .into_iter()
+                    .for_each(|u| u.remove_life());
             }
 
             self.skip_frame = true;
-            self.msges.push(game.get_raw_coords(index));
         }
     }
 
     pub fn handle_keyboard_event(
         &mut self,
         camera: &mut three_d::Camera,
-        kind: &three_d::renderer::control::Key,
+        kind: three_d::renderer::control::Key,
     ) {
         use three_d::renderer::control::Key;
 
         let speed = 0.5;
 
         match kind {
-            Key::ArrowDown => camera.rotate_around(
+            Key::ArrowDown | Key::S => camera.rotate_around(
                 &three_d::Vector3 {
                     x: 0.0,
                     y: 0.0,
@@ -134,7 +127,7 @@ impl GUIState {
                 0.0,
                 -speed,
             ),
-            Key::ArrowLeft => camera.rotate_around(
+            Key::ArrowLeft | Key::A => camera.rotate_around(
                 &three_d::Vector3 {
                     x: 0.0,
                     y: 0.0,
@@ -143,7 +136,7 @@ impl GUIState {
                 -speed,
                 0.0,
             ),
-            Key::ArrowRight => camera.rotate_around(
+            Key::ArrowRight | Key::D => camera.rotate_around(
                 &three_d::Vector3 {
                     x: 0.0,
                     y: 0.0,
@@ -152,7 +145,7 @@ impl GUIState {
                 speed,
                 0.0,
             ),
-            Key::ArrowUp => camera.rotate_around(
+            Key::ArrowUp | Key::W => camera.rotate_around(
                 &three_d::Vector3 {
                     x: 0.0,
                     y: 0.0,
