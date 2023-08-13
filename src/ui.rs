@@ -158,4 +158,14 @@ impl GUIState {
             _ => (),
         }
     }
+
+
+    pub fn update_game_state(&mut self, game: &mut engine::game::Game){
+        if !self.pause && !self.skip_frame {
+            game.next_tick();
+            game.swap_buffers();
+        }
+
+        self.skip_frame = false;
+    }
 }

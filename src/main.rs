@@ -68,8 +68,6 @@ pub fn main() {
             ColorMaterial::default(),
         );
 
-        gui_state.skip_frame = false;
-
         frame_input.events.iter().for_each(|event| match event {
             Event::MousePress {
                 button, position, ..
@@ -92,10 +90,7 @@ pub fn main() {
             .render(&camera, &model, &[])
             .write(|| gui.render());
 
-        if !gui_state.pause && !gui_state.skip_frame {
-            game.next_tick();
-            game.swap_buffers();
-        }
+        gui_state.update_game_state(&mut game);
 
         FrameOutput::default()
     });
