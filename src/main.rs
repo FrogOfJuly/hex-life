@@ -145,6 +145,7 @@ pub fn main() {
                         game.present.0.iter_mut().for_each(|(_k, v)| {
                             v.unmark()
                         });
+                        msges.clear()
                     }
                     if ui.add(Button::new("Fill")).clicked(){
                         game.present.0.iter_mut().for_each(|(_k, v)| {
