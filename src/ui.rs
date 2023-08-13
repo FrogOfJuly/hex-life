@@ -108,9 +108,7 @@ impl GUIState {
 
     pub fn handle_keyboard_event(
         &mut self,
-        context: &three_d::Context,
         camera: &mut three_d::Camera,
-        game: &mut engine::game::Game,
         kind: &three_d::renderer::control::Key,
     ) {
         use three_d::renderer::control::Key;

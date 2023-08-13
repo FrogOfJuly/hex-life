@@ -78,9 +78,7 @@ pub fn main() {
                 &mut game,
                 (position, button),
             ),
-            Event::KeyPress { kind, .. } => {
-                gui_state.handle_keyboard_event(&context, &mut camera, &mut game, kind)
-            }
+            Event::KeyPress { kind, .. } => gui_state.handle_keyboard_event(&mut camera, kind),
             _ => (),
         });
 
