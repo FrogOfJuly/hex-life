@@ -113,6 +113,12 @@ pub fn main() {
         
         patterns.insert("Single cell", Box::new(Pattern::single_cell));
         patterns.insert("Small flicker", Box::new(Pattern::small_flicker));
+        patterns.insert("Large flicker", Box::new(Pattern::large_flicker));
+        patterns.insert("Rotating trio", Box::new(Pattern::rotating_trio));
+        patterns.insert("Pulsating trio", Box::new(Pattern::pulsating_trio));
+        patterns.insert("Blob", Box::new(Pattern::blob));
+        patterns.insert("Big pulsar", Box::new(Pattern::big_pulsar));
+        
 
         patterns
     };
