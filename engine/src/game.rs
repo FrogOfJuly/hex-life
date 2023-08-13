@@ -106,7 +106,10 @@ impl Game {
         &self,
         index: &h3o::CellIndex,
     ) -> std::vec::Vec<((f64, f64, f64), [f32; 4])> {
-        let color = self.get_unit(*index).unwrap().compute_color();
+        let color = self
+            .get_unit(*index)
+            .unwrap()
+            .compute_color(index.is_pentagon());
         let boundary = index.boundary();
         boundary
             .iter()

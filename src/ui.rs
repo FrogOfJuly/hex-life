@@ -72,6 +72,7 @@ impl GUIState {
 
             ui.label("* Use arrows or WASD to rotate the camera");
             ui.label("* Use Enter or Space to pause/unpause");
+            ui.label("* Left-click on a sphere to mark a cell");
             ui.label("* Right-click on a sphere to kill a cell");
         });
     }
