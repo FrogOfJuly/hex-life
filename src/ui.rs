@@ -63,9 +63,9 @@ impl GUIState {
 
             ui.separator();
 
-            ui.label("Use arrows or WASD to rotate the camera");
-            ui.label("Use Enter or Space to pause/unpause");
-            ui.label("Right-click on a sphere to kill a cell");
+            ui.label("* Use arrows or WASD to rotate the camera");
+            ui.label("* Use Enter or Space to pause/unpause");
+            ui.label("* Right-click on a sphere to kill a cell");
             ui.label("");
             ui.label("Choose pattern and left-click on the sphere to spawn it");
         });
