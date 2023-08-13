@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use engine::game::SphericalIndex;
+use engine::{game::SphericalIndex, pattern::Pattern};
 use three_d::*;
 
 fn lnlt_to_xyz(ltln: &h3o::LatLng) -> (f64, f64, f64) {
@@ -108,17 +108,21 @@ pub fn main() {
     let mut pause = true;
     let mut msges = vec![];
 
-    let patterns = HashMap::from([
-        ("Single Cell", 0.4),
-        ("Venus", 0.7),
-        ("Earth", 1.0),
-        ("Mars", 1.5),
-    ]);
+    let patterns = {
+        let mut patterns : HashMap<&str, Box<dyn Fn() -> Pattern>> = HashMap::new();
+        
+        patterns.insert("Single cell", Box::new(Pattern::single_cell));
+        patterns.insert("Small flicker", Box::new(Pattern::small_flicker));
+
+        patterns
+    };
+    
 
     // Start the main render loop
     window.render_loop(
         move |mut frame_input| // Begin a new frame with an updated frame input
     {
+
         gui.update(
             &mut frame_input.events,
             frame_input.accumulated_time,
@@ -145,6 +149,7 @@ pub fn main() {
 
                     ui.label("Use arrows to rotate the camera");
                     ui.label("Use Enter to pause/unpause");
+                    if ui.add(Button::new("Log marked")).clicked()
                     {
                         use log::info;
                         info!("{:?}", msges);
@@ -156,9 +161,22 @@ pub fn main() {
                 SidePanel::left("Patterns").show(gui_context, |ui|{
                     ui.label("Patterns");
 
-                    if ui.add(Button::new("Single cell")).clicked(){
+                    patterns.iter().for_each(|(k, build_pattern)|{
+                        if ui.add(Button::new(k.to_string())).clicked(){
+                            let indecies = game.present.0.iter().filter(|(k, v)|
+                                v.marked
+                            ).map(|(k, _)| k.0)
+                            .flat_map(|index| build_pattern().as_cells(index))
+                            .collect::<Vec<_>>();
 
-                    }
+                            indecies.iter().for_each(|index| {
+                                let unit = game.present.0.get_mut(&SphericalIndex(*index)).unwrap();
+                                unit.inhabited = true;
+                            });
+                        }
+                    });
+
+                    
                 });
             },
         );
@@ -177,6 +195,7 @@ pub fn main() {
         }), ColorMaterial::default());
 
         let mut mark_put = false;
+        
 
         frame_input.events.iter().for_each(|event|{
             let speed = 0.5;
@@ -218,7 +237,7 @@ pub fn main() {
             )
             .write(|| gui.render());
 
-        if !pause && !mark_put{
+        if !pause && !mark_put {
             game.next_tick();
             game.swap_buffers();
         }

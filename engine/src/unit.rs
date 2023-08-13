@@ -90,7 +90,7 @@ impl UnitData {
         
 
         if self.marked {
-            let marked_color = [1.0, 0.0, 0.0, 0.1];
+            let marked_color = [1.0, 0.0, 0.0, 0.9];
             merge_colors(&marked_color, &color)
         } else {
             color
