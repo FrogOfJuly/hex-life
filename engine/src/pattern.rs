@@ -237,6 +237,7 @@ pub fn create_pattern_map() -> HashMap<&'static str, Box<dyn Pattern>> {
     patterns.insert("Medium wiggler", Box::new(MediumWiggler::new()));
     patterns.insert("Blob", Box::new(Blob::new()));
     patterns.insert("Little blob", Box::new(LittleBlob::new()));
+    patterns.insert("Glider", Box::new(Glider::new()));
 
     patterns
 }
