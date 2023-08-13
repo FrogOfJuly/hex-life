@@ -11,3 +11,6 @@ enum-iterator = "1.4.1"
 rand = "0.8.5"
 getrandom = { version = "0.2", features = ["js"] }
 h3o = "0.4.0"
+
+[profile.release]
+debug = true
