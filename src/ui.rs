@@ -10,7 +10,7 @@ pub struct GUIState {
 impl GUIState {
     pub fn new() -> Self {
         Self {
-            pause: true,
+            pause: false,
             skip_frame: false,
             patterns: engine::pattern::create_pattern_map(),
             toggled_pattern: None,
@@ -24,8 +24,13 @@ impl GUIState {
     pub fn draw_ui(&mut self, gui_context: &three_d::egui::Context, game: &mut engine::game::Game) {
         use three_d::egui::*;
 
-        SidePanel::left("Controls").show(gui_context, |ui| {
+        SidePanel::right("Controls").show(gui_context, |ui| {
             ui.label("Controls");
+            
+            (0..10).for_each(|_| {
+                ui.label(" ");
+            });
+
             if ui
                 .add(Button::new(if self.pause { "Run  " } else { "Pause" }))
                 .clicked()
@@ -61,13 +66,13 @@ impl GUIState {
                 }
             });
 
+            ui.label("Choose pattern and left-click on the sphere to spawn it");
+            ui.label("");
             ui.separator();
 
             ui.label("* Use arrows or WASD to rotate the camera");
             ui.label("* Use Enter or Space to pause/unpause");
             ui.label("* Right-click on a sphere to kill a cell");
-            ui.label("");
-            ui.label("Choose pattern and left-click on the sphere to spawn it");
         });
     }
 
