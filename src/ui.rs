@@ -25,11 +25,11 @@ impl GUIState {
         use three_d::egui::*;
 
         SidePanel::right("Controls").show(gui_context, |ui| {
-            ui.label("Controls");
-
             (0..10).for_each(|_| {
                 ui.label(" ");
             });
+
+            ui.label("Controls");
 
             if ui
                 .add(Button::new(if self.pause { "Run  " } else { "Pause" }))
