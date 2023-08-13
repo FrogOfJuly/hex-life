@@ -141,6 +141,11 @@ pub fn main() {
                             v.inhabited = false;
                         });
                     }
+                    if ui.add(Button::new("Clear marks")).clicked(){
+                        game.present.0.iter_mut().for_each(|(_k, v)| {
+                            v.unmark()
+                        });
+                    }
                     if ui.add(Button::new("Fill")).clicked(){
                         game.present.0.iter_mut().for_each(|(_k, v)| {
                             v.randomize_life(0.5);
@@ -208,13 +213,18 @@ pub fn main() {
                     Key::Enter => {pause = !pause;},
                     _ => ()
                 }
-            }else if let Event::MousePress { button : MouseButton::Left, position, ..} = event{
+            }else if let Event::MousePress { button, position, ..} = event{
                 if let Some(Vector3{ x, y, z }) = renderer::pick(&context, &camera, position, &model.geometry){
                     let index = xyz_to_lnlt(&(x as f64, y as f64, z as f64)).to_cell(resolution);
+                    let unit = game.present.0.get_mut(&SphericalIndex(index)).unwrap();
 
-                    game.present.0.get_mut(&SphericalIndex(index)).unwrap().mark();
+                    match button{
+                        MouseButton::Left => unit.mark(),
+                        MouseButton::Right => unit.unmark(),
+                        _ => ()
+                    }
+                    
                     mark_put = true;
-
                     
                     let msg = {
                         let coords = h3o::LatLng::from(index);
