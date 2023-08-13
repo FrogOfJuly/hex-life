@@ -137,11 +137,13 @@ impl Blob {
     }
 }
 
-impl Pattern for LittleBlob {
+impl Pattern for Blob {
     fn as_cells(&self, center: &h3o::CellIndex) -> Vec<h3o::CellIndex> {
         transpose_pattern(self.pattern[0], *center, &self.pattern[1..])
     }
 }
+
+
 
 struct LittleBlob {
     pattern: [CellIndex; 5],
@@ -162,11 +164,44 @@ impl LittleBlob {
     }
 }
 
-impl Pattern for Blob {
+impl Pattern for LittleBlob {
     fn as_cells(&self, center: &h3o::CellIndex) -> Vec<h3o::CellIndex> {
         transpose_pattern(self.pattern[0], *center, &self.pattern[1..])
     }
 }
+
+
+struct Glider {
+    pattern: [CellIndex; 11],
+}
+
+impl Glider {
+    fn new() -> Self {
+        Self {
+            //821317fffffffff
+            pattern: [
+                h3o::CellIndex::try_from(0x82130ffffffffff).expect("Invalid literal for cell"),
+                h3o::CellIndex::try_from(0x821327fffffffff).expect("Invalid literal for cell"),
+                h3o::CellIndex::try_from(0x8202dffffffffff).expect("Invalid literal for cell"),
+                h3o::CellIndex::try_from(0x821347fffffffff).expect("Invalid literal for cell"),
+                h3o::CellIndex::try_from(0x82122ffffffffff).expect("Invalid literal for cell"),
+                h3o::CellIndex::try_from(0x821237fffffffff).expect("Invalid literal for cell"),
+                h3o::CellIndex::try_from(0x821317fffffffff).expect("Invalid literal for cell"),
+                h3o::CellIndex::try_from(0x8212affffffffff).expect("Invalid literal for cell"),
+                h3o::CellIndex::try_from(0x8212e7fffffffff).expect("Invalid literal for cell"),
+                h3o::CellIndex::try_from(0x821267fffffffff).expect("Invalid literal for cell"),
+                h3o::CellIndex::try_from(0x821387fffffffff).expect("Invalid literal for cell"),
+            ],
+        }
+    }
+}
+
+impl Pattern for Glider {
+    fn as_cells(&self, center: &h3o::CellIndex) -> Vec<h3o::CellIndex> {
+        transpose_pattern(self.pattern[0], *center, &self.pattern[1..])
+    }
+}
+
 
 fn transpose_pattern(src: CellIndex, dst: CellIndex, pattern: &[CellIndex]) -> Vec<CellIndex> {
     // Compute translation offset.
