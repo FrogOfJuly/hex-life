@@ -1,5 +1,3 @@
-use three_d::egui::*;
-
 pub struct GUIState {
     pub pause: bool,
     pub skip_frame: bool,

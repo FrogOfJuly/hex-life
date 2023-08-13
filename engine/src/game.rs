@@ -1,7 +1,5 @@
 use std::collections::HashMap;
 
-use h3o::CellIndex;
-
 use crate::unit::{Grassness, UnitData};
 
 pub struct Field(pub HashMap<SphericalIndex, UnitData>);
@@ -120,8 +118,6 @@ impl Game {
             .zip([color].into_iter().cycle())
             .collect()
     }
-
-    pub fn get_mesh_parts(&self) {}
 }
 
 impl Default for Game {

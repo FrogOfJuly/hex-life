@@ -4,7 +4,6 @@ use three_d::*;
 mod ui;
 
 pub fn main() {
-    // Create a window (a canvas on web)
     let window = Window::new(WindowSettings {
         title: "Life".to_string(),
         max_size: None,
@@ -12,10 +11,8 @@ pub fn main() {
     })
     .unwrap();
 
-    // Get the graphics context from the window
     let context = window.gl();
 
-    // Create a camera
     let mut camera = Camera::new_perspective(
         window.viewport(),
         vec3(0.0, 0.0, 4.0),
@@ -27,12 +24,9 @@ pub fn main() {
     );
 
     let mut gui = three_d::GUI::new(&context);
-
     let mut gui_state = ui::GUIState::new();
-
     let mut game = engine::game::Game::new().with_spawned_life();
 
-    // Start the main render loop
     window.render_loop(move |mut frame_input| {
         gui.update(
             &mut frame_input.events,
@@ -103,7 +97,6 @@ pub fn main() {
             game.swap_buffers();
         }
 
-        // Returns default frame output to end the frame
         FrameOutput::default()
     });
 }
