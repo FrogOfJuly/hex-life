@@ -136,7 +136,8 @@ pub fn main() {
             frame_input.device_pixel_ratio,
             |gui_context| {
                 use three_d::egui::*;
-                TopBottomPanel::bottom("Controls").show(gui_context, |ui| {
+
+                SidePanel::left("Patterns").show(gui_context, |ui|{
                     ui.label("Controls");
                     
                     if ui.add(Button::new(if pause {"Run"} else {"Pause"})).clicked(){
@@ -149,9 +150,9 @@ pub fn main() {
                     }
                     if ui.add(Button::new("Clear marks")).clicked(){
                         game.present.0.iter_mut().for_each(|(_k, v)| {
-                            v.unmark()
+                            v.unmark();
                         });
-                        msges.clear()
+                        msges.clear();
                     }
                     if ui.add(Button::new("Fill")).clicked(){
                         game.present.0.iter_mut().for_each(|(_k, v)| {
@@ -166,11 +167,9 @@ pub fn main() {
                         use log::info;
                         info!("{:?}", msges);
                     }
-                    
-                    
-                });
 
-                SidePanel::left("Patterns").show(gui_context, |ui|{
+                    ui.separator();
+
                     ui.label("Patterns");
 
                     patterns.iter().for_each(|(k, build_pattern)|{
