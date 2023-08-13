@@ -188,6 +188,9 @@ pub fn main() {
                         }
                     });
 
+                    ui.label("Click on a sphere to mark cell");
+                    ui.label("Choose pattern to spawn it around each marked cells");
+
                     
                 });
             },
