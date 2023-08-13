@@ -100,16 +100,13 @@ impl GUIState {
             if let (three_d::MouseButton::Left, Some(toggled_pattern)) =
                 (button, self.toggled_pattern)
             {
-                game.present
-                    .0
-                    .iter()
-                    .filter(|(_k, v)| v.marked)
-                    .map(|(k, _)| k.0)
-                    .flat_map(|index| self.patterns.get(toggled_pattern).unwrap()().as_cells(index))
-                    .collect::<Vec<_>>()
+                self.patterns.get(toggled_pattern).unwrap()()
+                    .as_cells(index)
                     .iter()
                     .for_each(|index| {
-                        game.get_mut_unit(index).unwrap().add_life();
+                        game.get_mut_unit(index)
+                            .into_iter()
+                            .for_each(|u| u.add_life());
                     });
             }
 
