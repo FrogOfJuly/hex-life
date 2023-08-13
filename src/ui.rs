@@ -51,7 +51,7 @@ impl GUIState {
                 let mut b = Button::new(k.to_string());
                 if let Some(pattern_name) = self.toggled_pattern {
                     if pattern_name == *k {
-                        b = b.fill(Color32::from_rgb(255, 255, 0))
+                        b = b.fill(Color32::from_rgb(100, 200, 100))
                     }
                 }
 
@@ -59,7 +59,7 @@ impl GUIState {
                     (true, Some(toggled_pattern)) if toggled_pattern == *k => {
                         self.toggled_pattern = None
                     }
-                    (true, None) => self.toggled_pattern = Some(*k),
+                    (true, _) => self.toggled_pattern = Some(*k),
                     _ => (),
                 }
             });
