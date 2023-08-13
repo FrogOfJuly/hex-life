@@ -160,14 +160,6 @@ pub fn main() {
                         });
                     }
 
-                    ui.label("Use arrows to rotate the camera");
-                    ui.label("Use Enter to pause/unpause");
-                    if ui.add(Button::new("Log marked")).clicked()
-                    {
-                        use log::info;
-                        info!("{:?}", msges);
-                    }
-
                     ui.separator();
 
                     ui.label("Patterns");
@@ -187,9 +179,23 @@ pub fn main() {
                         }
                     });
 
+                    ui.separator();
+
+                    ui.label("Use arrows to rotate the camera");
+                    ui.label("Use Enter to pause/unpause");
+                    ui.label("");
                     ui.label("Left-click on a sphere to mark cell");
                     ui.label("Right-click to unmark");
                     ui.label("Choose pattern to spawn it around of each marked cell");
+
+                    ui.separator();
+                    ui.separator();
+
+                    if ui.add(Button::new("Log marked")).clicked()
+                    {
+                        use log::info;
+                        info!("{:?}", msges);
+                    }
 
                     
                 });
