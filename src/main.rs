@@ -73,12 +73,12 @@ pub fn main() {
                 button, position, ..
             } => gui_state.handle_mouse_clicks(
                 &model.geometry,
-                &mut camera,
+                &camera,
                 &context,
                 &mut game,
-                (position, button),
+                (&position, &button),
             ),
-            Event::KeyPress { kind, .. } => gui_state.handle_keyboard_event(&mut camera, kind),
+            Event::KeyPress { kind, .. } => gui_state.handle_keyboard_event(&mut camera, &kind),
             _ => (),
         });
 

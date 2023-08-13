@@ -3,6 +3,7 @@ pub struct GUIState {
     pub skip_frame: bool,
     patterns: std::collections::HashMap<&'static str, Box<dyn Fn() -> engine::pattern::Pattern>>,
     pub msges: Vec<(f64, f64)>,
+    pub toggled_pattern: Option<&'static str>,
 }
 
 impl GUIState {
@@ -12,10 +13,11 @@ impl GUIState {
             skip_frame: false,
             patterns: engine::pattern::Pattern::create_pattern_map(),
             msges: vec![],
+            toggled_pattern: None,
         }
     }
 
-    pub fn toogle_pause(&mut self) {
+    pub fn toggle_pause(&mut self) {
         self.pause = !self.pause;
     }
 
@@ -45,20 +47,20 @@ impl GUIState {
 
             ui.label("Patterns");
 
-            self.patterns.iter().for_each(|(k, build_pattern)| {
-                if ui.add(Button::new(k.to_string())).clicked() {
-                    let indecies = game
-                        .present
-                        .0
-                        .iter()
-                        .filter(|(_k, v)| v.marked)
-                        .map(|(k, _)| k.0)
-                        .flat_map(|index| build_pattern().as_cells(index))
-                        .collect::<Vec<_>>();
+            self.patterns.iter().for_each(|(k, _build_pattern)| {
+                let mut b = Button::new(k.to_string());
+                if let Some(pattern_name) = self.toggled_pattern {
+                    if pattern_name == *k {
+                        b = b.fill(Color32::from_rgb(255, 255, 0))
+                    }
+                }
 
-                    indecies.iter().for_each(|index| {
-                        game.get_mut_unit(index).unwrap().add_life();
-                    });
+                match (ui.add(b).clicked(), self.toggled_pattern) {
+                    (true, Some(toggled_pattern)) if toggled_pattern == *k => {
+                        self.toggled_pattern = None
+                    }
+                    (true, None) => self.toggled_pattern = Some(*k),
+                    _ => (),
                 }
             });
 
@@ -84,7 +86,7 @@ impl GUIState {
     pub fn handle_mouse_clicks(
         &mut self,
         geometry: impl IntoIterator<Item = impl three_d::Geometry>,
-        camera: &mut three_d::Camera,
+        camera: &three_d::Camera,
         context: &three_d::Context,
         game: &mut engine::game::Game,
         (position, button): (&three_d::LogicalPoint, &three_d::MouseButton),
@@ -95,10 +97,20 @@ impl GUIState {
             let index = engine::game::as_spherical(&(x as f64, y as f64, z as f64))
                 .to_cell(engine::data::RESOLUTION);
 
-            match button {
-                three_d::MouseButton::Left => game.mark_unit(index),
-                three_d::MouseButton::Right => game.unmark_unit(index),
-                _ => (),
+            if let (three_d::MouseButton::Left, Some(toggled_pattern)) =
+                (button, self.toggled_pattern)
+            {
+                game.present
+                    .0
+                    .iter()
+                    .filter(|(_k, v)| v.marked)
+                    .map(|(k, _)| k.0)
+                    .flat_map(|index| self.patterns.get(toggled_pattern).unwrap()().as_cells(index))
+                    .collect::<Vec<_>>()
+                    .iter()
+                    .for_each(|index| {
+                        game.get_mut_unit(index).unwrap().add_life();
+                    });
             }
 
             self.skip_frame = true;
@@ -152,13 +164,12 @@ impl GUIState {
                 0.0,
                 speed,
             ),
-            Key::Enter | Key::Space => self.toogle_pause(),
+            Key::Enter | Key::Space => self.toggle_pause(),
             _ => (),
         }
     }
 
-
-    pub fn update_game_state(&mut self, game: &mut engine::game::Game){
+    pub fn update_game_state(&mut self, game: &mut engine::game::Game) {
         if !self.pause && !self.skip_frame {
             game.next_tick();
             game.swap_buffers();
