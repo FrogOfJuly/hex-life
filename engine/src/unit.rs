@@ -81,15 +81,12 @@ impl UnitData {
     }
 
     pub fn compute_color(&self, is_penta: bool) -> [f32; 4] {
-        // BLOCK_SIZE * (width as f64), BLOCK_SIZE * (height as f64)
         let base_color = if self.inhabited {
             data::UNIT_COLOR
+        } else if is_penta {
+            data::ANOTHER_BACK_COLOR
         } else {
-            if is_penta {
-                data::ANOTHER_BACK_COLOR
-            } else {
-                data::BACK_COLOR
-            }
+            data::BACK_COLOR
         };
 
         let grass_color = match self.grass {
