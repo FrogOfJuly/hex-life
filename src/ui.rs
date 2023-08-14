@@ -126,6 +126,7 @@ impl GUIState {
         if let Some(three_d::Vector3 { x, y, z }) =
             three_d::renderer::pick(context, camera, position, geometry)
         {
+            log::info!("clicked here: {:?}", (x, y, z));
             let Some(index) = engine::game::as_spherical(&(x as f64, y as f64, z as f64))
                 .map(|i| i.to_cell(engine::data::RESOLUTION))
             else {
