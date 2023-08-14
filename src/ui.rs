@@ -5,6 +5,7 @@ pub struct GUIState {
     pub skip_frame: bool,
     patterns: HashMap<&'static str, Box<dyn engine::pattern::Pattern>>,
     pub toggled_pattern: Option<&'static str>,
+    pub rules: engine::rules::SimpleRules,
 }
 
 impl GUIState {
@@ -14,6 +15,7 @@ impl GUIState {
             skip_frame: false,
             patterns: engine::pattern::create_pattern_map(),
             toggled_pattern: None,
+            rules: engine::rules::SimpleRules::default(),
         }
     }
 
@@ -25,11 +27,17 @@ impl GUIState {
         use three_d::egui::*;
 
         SidePanel::right("Controls").show(gui_context, |ui| {
-            (0..10).for_each(|_| {
+            (0..4).for_each(|_| {
                 ui.label(" ");
             });
 
-            ui.label("Controls");
+            ui.hyperlink_to("Github", "https://frogofjuly.github.io/hex-life");
+
+            (0..4).for_each(|_| {
+                ui.label(" ");
+            });
+
+            ui.heading("Controls");
 
             if ui
                 .add(Button::new(if self.pause { "Run  " } else { "Pause" }))
@@ -47,7 +55,7 @@ impl GUIState {
 
             ui.separator();
 
-            ui.label("Patterns");
+            ui.heading("Patterns");
 
             self.patterns.iter().for_each(|(k, _build_pattern)| {
                 let mut b = Button::new(k.to_string());
@@ -74,6 +82,32 @@ impl GUIState {
             ui.label("* Use Enter or Space to pause/unpause");
             ui.label("* Left-click on a sphere to mark a cell");
             ui.label("* Right-click on a sphere to kill a cell");
+
+            ui.separator();
+
+            ui.heading("Rules");
+
+            ui.label("Survives");
+            ui.horizontal(|ui| {
+                self.rules
+                    .survives
+                    .iter_mut()
+                    .enumerate()
+                    .for_each(|(i, v)| {
+                        ui.add(Checkbox::new(v, i.to_string()));
+                    });
+            });
+
+            ui.label("Emerges");
+            ui.horizontal(|ui| {
+                self.rules
+                    .emerges
+                    .iter_mut()
+                    .enumerate()
+                    .for_each(|(i, v)| {
+                        ui.add(Checkbox::new(v, i.to_string()));
+                    });
+            });
         });
     }
 
@@ -173,7 +207,7 @@ impl GUIState {
 
     pub fn update_game_state(&mut self, game: &mut engine::game::Game) {
         if !self.pause && !self.skip_frame {
-            game.next_tick();
+            game.next_tick(&self.rules);
             game.swap_buffers();
         }
 

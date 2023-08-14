@@ -1,18 +1,8 @@
-use enum_iterator::Sequence;
-
 use super::data;
-
-#[derive(Clone, Copy, Sequence, PartialEq, Eq, Hash)]
-pub enum Grassness {
-    Poor,
-    Usual,
-    Rich,
-}
 
 #[derive(Clone, Copy)]
 pub struct UnitData {
     pub inhabited: bool,
-    pub grass: Grassness,
     pub marked: bool,
 }
 
@@ -24,7 +14,6 @@ impl UnitData {
     pub fn empty() -> Self {
         Self {
             inhabited: false,
-            grass: Grassness::Usual,
             marked: false,
         }
     }
@@ -47,8 +36,8 @@ impl UnitData {
         self.inhabited = false;
     }
 
-    pub fn add_grass(mut self) -> Self {
-        self.grass = self.grass.next().unwrap_or(self.grass);
+    pub fn with_set_life(mut self, inh : bool) -> Self{
+        self.inhabited = inh;
         self
     }
 
@@ -70,32 +59,19 @@ impl UnitData {
         self.marked = false;
     }
 
-    pub fn remove_grass(mut self) -> Self {
-        self.grass = self.grass.previous().unwrap_or(self.grass);
-        self
-    }
-
     pub fn randomize_life(&mut self, p: f64) {
         let inhabited = rand::random::<u32>() % 100 < ((100.0 * p.abs()) as u32);
         self.inhabited = inhabited;
     }
 
     pub fn compute_color(&self, is_penta: bool) -> [f32; 4] {
-        let base_color = if self.inhabited {
+        let color = if self.inhabited {
             data::UNIT_COLOR
         } else if is_penta {
             data::ANOTHER_BACK_COLOR
         } else {
             data::BACK_COLOR
         };
-
-        let grass_color = match self.grass {
-            Grassness::Rich => data::GRASS_COLOR,
-            Grassness::Usual => data::BACK_COLOR,
-            Grassness::Poor => data::SCORCHD_COLOR,
-        };
-
-        let color = merge_colors(&base_color, &grass_color);
 
         if self.marked {
             let marked_color = [1.0, 0.0, 0.0, 0.9];

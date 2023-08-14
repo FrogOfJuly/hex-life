@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::unit::{Grassness, UnitData};
+use crate::{rules::SimpleRules, unit::UnitData};
 
 pub struct Field(pub HashMap<SphericalIndex, UnitData>);
 pub struct Game {
@@ -78,7 +78,7 @@ impl Game {
         (sph.lat_radians(), sph.lng_radians())
     }
 
-    pub fn next_tick(&mut self) {
+    pub fn next_tick(&mut self, rules: &SimpleRules) {
         self.present
             .0
             .iter()
@@ -89,7 +89,7 @@ impl Game {
                         idx: *idx,
                         data: *data,
                     }
-                    .transform(),
+                    .transform(rules),
                     *idx,
                 )
             })
@@ -148,21 +148,11 @@ impl<'a> Unit<'a> {
             .map(|idx| *self.backref.0.get(&SphericalIndex(idx)).unwrap())
     }
 
-    pub fn transform(&self) -> UnitData {
+    pub fn transform(&self, rules: &SimpleRules) -> UnitData {
         let n: usize = self.get_neighbours().filter(|n| n.inhabited).count();
 
-        match (self.data.grass, self.data.inhabited) {
-            (Grassness::Rich, _) if n == 3 || n == 5 => self.data,
-            (Grassness::Rich, false) if n == 1 || n == 2 => self.data.with_added_life(),
-
-            (Grassness::Usual, _) if n == 3 || n == 5 => self.data,
-            (Grassness::Usual, false) if n == 2 => self.data.with_added_life(),
-
-            (Grassness::Poor, true) if n >= 2 || n <= 3 => self.data,
-            (Grassness::Poor, false) if n == 5 => self.data.with_added_life(),
-
-            _ => self.data.with_removed_life(),
-        }
+        self.data
+            .with_set_life(rules.apply(n, self.data.inhabited).unwrap())
     }
 }
 
