@@ -25,7 +25,7 @@ pub fn main() {
     );
 
     let mut gui = three_d::GUI::new(&context);
-    let mut gui_state = ui::GUIState::new();
+    let mut gui_state = ui::GUIState::new(&camera);
     let mut game = engine::game::Game::new().with_spawned_life();
 
     window.render_loop(move |mut frame_input| {
@@ -82,6 +82,10 @@ pub fn main() {
             Event::KeyPress { kind, .. } => gui_state.handle_keyboard_event(&mut camera, *kind),
             _ => (),
         });
+
+        gui_state
+            .orbit_control
+            .handle_events(&mut camera, &mut frame_input.events);
 
         frame_input
             .screen()

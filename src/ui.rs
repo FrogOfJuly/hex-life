@@ -1,21 +1,26 @@
 use std::collections::HashMap;
 
+use three_d::{OrbitControl, Camera};
+
 pub struct GUIState {
     pub pause: bool,
     pub skip_frame: bool,
     patterns: HashMap<&'static str, Box<dyn engine::pattern::Pattern>>,
     pub toggled_pattern: Option<&'static str>,
     pub rules: engine::rules::SimpleRules,
+    pub orbit_control : OrbitControl,
+    
 }
 
 impl GUIState {
-    pub fn new() -> Self {
+    pub fn new(camera : &Camera) -> Self {
         Self {
             pause: false,
             skip_frame: false,
             patterns: engine::pattern::create_pattern_map(),
             toggled_pattern: None,
             rules: engine::rules::SimpleRules::default(),
+            orbit_control : OrbitControl::new(*camera.target(), 1.0, 100.0),
         }
     }
 
@@ -31,9 +36,7 @@ impl GUIState {
             ui.label(" ");
             ui.label(" ");
 
-            if ui.hyperlink_to("Github", "https://frogofjuly.github.io/hex-life").clicked(){
-                
-            };
+            ui.hyperlink_to("Github", "https://frogofjuly.github.io/hex-life");
 
             ui.label(" ");
 
