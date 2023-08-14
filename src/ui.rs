@@ -130,6 +130,7 @@ impl GUIState {
             let Some(index) = engine::game::as_spherical(&(x as f64, y as f64, z as f64))
                 .map(|i| i.to_cell(engine::data::RESOLUTION))
             else {
+                log::info!("you clicked in a wrong place!");
                 return;
             };
 
@@ -156,6 +157,8 @@ impl GUIState {
             }
 
             self.skip_frame = true;
+        } else {
+            log::info!("click did not connect: {:?}", position);
         }
     }
 
