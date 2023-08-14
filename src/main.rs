@@ -90,9 +90,8 @@ pub fn main() {
         frame_input
             .screen()
             .clear(ClearState::color_and_depth(0.8, 0.8, 0.8, 1.0, 1.0))
-            .write(|| gui.render())
-            .render(&camera, &model, &[]);
-            
+            .render(&camera, &model, &[])
+            .write(|| gui.render());
 
         gui_state.update_game_state(&mut game);
 
