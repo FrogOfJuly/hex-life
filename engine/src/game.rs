@@ -161,8 +161,8 @@ pub fn as_cartesian(ltln: &h3o::LatLng) -> (f64, f64, f64) {
     (lt.cos() * ln.cos(), lt.cos() * ln.sin(), lt.sin())
 }
 
-pub fn as_spherical((x, y, z): &(f64, f64, f64)) -> h3o::LatLng {
+pub fn as_spherical((x, y, z): &(f64, f64, f64)) -> Option<h3o::LatLng> {
     let lat = z.asin();
     let lng = y.atan2(*x);
-    h3o::LatLng::from_radians(lat, lng).unwrap()
+    h3o::LatLng::from_radians(lat, lng).ok()
 }

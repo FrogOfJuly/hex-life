@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use three_d::{OrbitControl, Camera};
+use three_d::{Camera, OrbitControl};
 
 pub struct GUIState {
     pub pause: bool,
@@ -8,19 +8,18 @@ pub struct GUIState {
     patterns: HashMap<&'static str, Box<dyn engine::pattern::Pattern>>,
     pub toggled_pattern: Option<&'static str>,
     pub rules: engine::rules::SimpleRules,
-    pub orbit_control : OrbitControl,
-    
+    pub orbit_control: OrbitControl,
 }
 
 impl GUIState {
-    pub fn new(camera : &Camera) -> Self {
+    pub fn new(camera: &Camera) -> Self {
         Self {
             pause: false,
             skip_frame: false,
             patterns: engine::pattern::create_pattern_map(),
             toggled_pattern: None,
             rules: engine::rules::SimpleRules::default(),
-            orbit_control : OrbitControl::new(*camera.target(), 1.0, 100.0),
+            orbit_control: OrbitControl::new(*camera.target(), 1.0, 100.0),
         }
     }
 
@@ -32,7 +31,6 @@ impl GUIState {
         use three_d::egui::*;
 
         SidePanel::right("Controls").show(gui_context, |ui| {
-
             ui.label(" ");
             ui.label(" ");
 
@@ -128,22 +126,22 @@ impl GUIState {
         if let Some(three_d::Vector3 { x, y, z }) =
             three_d::renderer::pick(context, camera, position, geometry)
         {
-            let index = engine::game::as_spherical(&(x as f64, y as f64, z as f64))
-                .to_cell(engine::data::RESOLUTION);
+            let Some(index) = engine::game::as_spherical(&(x as f64, y as f64, z as f64))
+                .map(|i| i.to_cell(engine::data::RESOLUTION))
+            else {
+                return;
+            };
 
             if let (three_d::MouseButton::Left, Some(toggled_pattern)) =
                 (button, self.toggled_pattern)
             {
-                self.patterns
-                    .get(toggled_pattern)
-                    .unwrap()
-                    .as_cells(&index)
-                    .iter()
-                    .for_each(|index| {
+                self.patterns.get(toggled_pattern).iter().for_each(|u| {
+                    u.as_cells(&index).iter().for_each(|index| {
                         game.get_mut_unit(index)
                             .into_iter()
                             .for_each(|u| u.add_life());
-                    });
+                    })
+                });
             } else if let (three_d::MouseButton::Left, None) = (button, self.toggled_pattern) {
                 game.get_mut_unit(&index)
                     .into_iter()
