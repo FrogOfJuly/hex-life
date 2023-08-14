@@ -7,9 +7,7 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [workspace]
-members = [
-    "engine",
-]
+members = ["engine"]
 
 [dependencies]
 engine = { path = "engine" }
@@ -22,6 +20,49 @@ console_log = "0.2"
 wasm-bindgen = "0.2"
 wasm-bindgen-futures = "0.4"
 console_error_panic_hook = "0.1"
+web-sys = { version = "0.3.58", features = [
+    "BinaryType",
+    "Blob",
+    "Clipboard",
+    "ClipboardEvent",
+    "CompositionEvent",
+    "console",
+    "CssStyleDeclaration",
+    "DataTransfer",
+    "DataTransferItem",
+    "DataTransferItemList",
+    "Document",
+    "DomRect",
+    "DragEvent",
+    "Element",
+    "Event",
+    "EventListener",
+    "EventTarget",
+    "ExtSRgb",
+    "File",
+    "FileList",
+    "FocusEvent",
+    "HtmlCanvasElement",
+    "HtmlElement",
+    "HtmlInputElement",
+    "InputEvent",
+    "KeyboardEvent",
+    "Location",
+    "MediaQueryList",
+    "MediaQueryListEvent",
+    "MouseEvent",
+    "Navigator",
+    "Performance",
+    "Storage",
+    "Touch",
+    "TouchEvent",
+    "TouchList",
+    "WebGl2RenderingContext",
+    "WebglDebugRendererInfo",
+    "WebGlRenderingContext",
+    "WheelEvent",
+    "Window",
+] }
 
 [profile.release]
 lto = "fat"
