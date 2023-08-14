@@ -27,15 +27,15 @@ impl GUIState {
         use three_d::egui::*;
 
         SidePanel::right("Controls").show(gui_context, |ui| {
-            (0..4).for_each(|_| {
-                ui.label(" ");
-            });
 
-            ui.hyperlink_to("Github", "https://frogofjuly.github.io/hex-life");
+            ui.label(" ");
+            ui.label(" ");
 
-            (0..4).for_each(|_| {
-                ui.label(" ");
-            });
+            if ui.hyperlink_to("Github", "https://frogofjuly.github.io/hex-life").clicked(){
+                
+            };
+
+            ui.label(" ");
 
             ui.heading("Controls");
 
@@ -63,15 +63,15 @@ impl GUIState {
                     if pattern_name == *k {
                         b = b.fill(Color32::from_rgb(57, 115, 172))
                     }
-                }
+                };
 
                 match (ui.add(b).clicked(), self.toggled_pattern) {
                     (true, Some(toggled_pattern)) if toggled_pattern == *k => {
-                        self.toggled_pattern = None
+                        self.toggled_pattern = None;
                     }
                     (true, _) => self.toggled_pattern = Some(*k),
                     _ => (),
-                }
+                };
             });
 
             ui.label("Choose pattern and left-click on the sphere to spawn it");
@@ -108,6 +108,9 @@ impl GUIState {
                         ui.add(Checkbox::new(v, i.to_string()));
                     });
             });
+
+            ui.label(" ");
+            ui.label(" ");
         });
     }
 
