@@ -38,10 +38,10 @@ impl GUIState {
 
             ui.label(" ");
 
-            ui.heading("Controls");
-
             ui.horizontal(|ui| {
-                ui.vertical_centered_justified(|ui| {
+                ui.vertical(|ui| {
+                    ui.heading("Controls");
+                    
                     if ui
                         .add(Button::new(if self.pause { "Run  " } else { "Pause" }))
                         .clicked()
@@ -59,7 +59,7 @@ impl GUIState {
 
                 ui.separator();
 
-                ui.vertical_centered_justified(|ui| {
+                ui.vertical(|ui| {
                     ui.heading(format!("Grid fineness: {:?}", as_number(&game.resolution)));
 
                     if ui.add(Button::new("Increase")).clicked() {
@@ -93,7 +93,7 @@ impl GUIState {
                     _ => (),
                 };
             });
-            
+
             ui.label("Left-click to spawn");
             ui.label("");
             ui.separator();
