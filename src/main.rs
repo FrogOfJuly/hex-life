@@ -72,13 +72,17 @@ pub fn main() {
         frame_input.events.iter().for_each(|event| match event {
             Event::MousePress {
                 button, position, ..
-            } => gui_state.handle_mouse_clicks(
-                &model.geometry,
-                &camera,
-                &context,
-                &mut game,
-                (&position, &button),
-            ),
+            } => {
+                gui_state.handle_mouse_clicks(
+                    &model.geometry,
+                    &camera,
+                    &context,
+                    &mut game,
+                    (&position, &button),
+                );
+                log::info!("Click detected! event: {:?}", event);
+            }
+
             Event::KeyPress { kind, .. } => gui_state.handle_keyboard_event(&mut camera, *kind),
             _ => (),
         });

@@ -123,7 +123,6 @@ impl GUIState {
         game: &mut engine::game::Game,
         (position, button): (&three_d::LogicalPoint, &three_d::MouseButton),
     ) {
-        log::info!("logical click: {:?}", position);
         if let Some(three_d::Vector3 { x, y, z }) =
             three_d::renderer::pick(context, camera, position, geometry)
         {
