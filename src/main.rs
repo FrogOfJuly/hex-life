@@ -39,7 +39,7 @@ pub fn main() {
         frame_input
             .events
             .iter()
-            .filter(|event| matches!(event, Event::MouseMotion { .. }))
+            .filter(|event| !matches!(event, Event::MouseMotion { .. }))
             .for_each(|event| log::info!("Got event: {:?}", event));
 
         gui.update(
