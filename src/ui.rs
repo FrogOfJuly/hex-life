@@ -31,7 +31,7 @@ impl GUIState {
     pub fn draw_ui(&mut self, gui_context: &three_d::egui::Context, game: &mut engine::game::Game) {
         use three_d::egui::*;
 
-        Window::new("Interface").show(gui_context, |ui| {
+        Window::new("Game of life: hexagonal, on a sphere").show(gui_context, |ui| {
             ui.label(" ");
 
             ui.hyperlink_to("Github", "https://frogofjuly.github.io/hex-life");
@@ -56,6 +56,8 @@ impl GUIState {
                         game.spawn_life();
                     }
                 });
+
+                ui.separator();
 
                 ui.vertical(|ui| {
                     ui.heading(format!("Grid fineness: {:?}", as_number(&game.resolution)));
