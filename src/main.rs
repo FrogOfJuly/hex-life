@@ -8,13 +8,6 @@ pub fn main() {
     let window = Window::new(WindowSettings {
         title: "Life".to_string(),
         max_size: None,
-        surface_settings: SurfaceSettings {
-            vsync: false,
-            depth_buffer: 0,
-            stencil_buffer: 0,
-            multisamples: 0,
-            ..Default::default()
-        },
         ..Default::default()
     })
     .unwrap();
