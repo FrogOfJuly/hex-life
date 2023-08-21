@@ -31,7 +31,7 @@ impl GUIState {
     pub fn draw_ui(&mut self, gui_context: &three_d::egui::Context, game: &mut engine::game::Game) {
         use three_d::egui::*;
 
-        Window::new("Game of life: hexagonal, on a sphere").show(gui_context, |ui| {
+        Window::new("Game of life").show(gui_context, |ui| {
             ui.label(" ");
 
             ui.hyperlink_to("Github", "https://frogofjuly.github.io/hex-life");
@@ -41,7 +41,7 @@ impl GUIState {
             ui.heading("Controls");
 
             ui.horizontal(|ui| {
-                ui.vertical(|ui| {
+                ui.vertical_centered_justified(|ui| {
                     if ui
                         .add(Button::new(if self.pause { "Run  " } else { "Pause" }))
                         .clicked()
@@ -59,7 +59,7 @@ impl GUIState {
 
                 ui.separator();
 
-                ui.vertical(|ui| {
+                ui.vertical_centered_justified(|ui| {
                     ui.heading(format!("Grid fineness: {:?}", as_number(&game.resolution)));
 
                     if ui.add(Button::new("Increase")).clicked() {
