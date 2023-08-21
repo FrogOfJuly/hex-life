@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use h3o::Resolution;
+
 use crate::{rules::SimpleRules, unit::UnitData};
 
 pub struct Field(pub HashMap<SphericalIndex, UnitData>);
@@ -8,16 +10,18 @@ pub struct Game {
     pub future: Field,
 
     pub indecies: Vec<h3o::CellIndex>,
+    pub resolution: h3o::Resolution,
 }
 
 impl Game {
-    pub fn new() -> Self {
+    pub fn new(&resolution: &h3o::Resolution) -> Self {
         Self {
             present: Field(std::collections::HashMap::<SphericalIndex, UnitData>::new()),
             future: Field(std::collections::HashMap::<SphericalIndex, UnitData>::new()),
             indecies: h3o::CellIndex::base_cells()
-                .flat_map(|index| index.children(crate::data::RESOLUTION))
+                .flat_map(|index| index.children(resolution))
                 .collect::<Vec<_>>(),
+            resolution,
         }
     }
 
@@ -121,11 +125,78 @@ impl Game {
             .zip([color].into_iter().cycle())
             .collect()
     }
+
+    pub fn decrease_fineness(&mut self) {
+        if let Some(resolution) = dec_resolution(&self.resolution) {
+            *self = Game::new(&resolution).with_spawned_life();
+        }
+    }
+
+    pub fn increase_fineness(&mut self) {
+        if let Some(resolution) = inc_resolution(&self.resolution) {
+            *self = Game::new(&resolution).with_spawned_life();
+        }
+    }
+}
+
+pub fn as_number(r: &h3o::Resolution) -> u32 {
+    match r {
+        Resolution::Zero => 0,
+        Resolution::One => 1,
+        Resolution::Two => 2,
+        Resolution::Three => 3,
+        Resolution::Four => 4,
+        Resolution::Five => 5,
+        Resolution::Six => 6,
+        Resolution::Seven => 7,
+        Resolution::Eight => 8,
+        Resolution::Nine => 9,
+        Resolution::Ten => 10,
+        Resolution::Eleven => 11,
+        Resolution::Twelve => 12,
+        Resolution::Thirteen => 13,
+        Resolution::Fourteen => 14,
+        Resolution::Fifteen => 15,
+    }
+}
+
+fn as_resolution(i: u32) -> Option<h3o::Resolution> {
+    match i {
+        0 => Some(Resolution::Zero),
+        1 => Some(Resolution::One),
+        2 => Some(Resolution::Two),
+        3 => Some(Resolution::Three),
+        4 => Some(Resolution::Four),
+        5 => Some(Resolution::Five),
+        6 => Some(Resolution::Six),
+        7 => Some(Resolution::Seven),
+        8 => Some(Resolution::Eight),
+        9 => Some(Resolution::Nine),
+        10 => Some(Resolution::Ten),
+        11 => Some(Resolution::Eleven),
+        12 => Some(Resolution::Twelve),
+        13 => Some(Resolution::Thirteen),
+        14 => Some(Resolution::Fourteen),
+        15 => Some(Resolution::Fifteen),
+        _ => None,
+    }
+}
+
+fn inc_resolution(r: &h3o::Resolution) -> Option<h3o::Resolution> {
+    as_resolution(as_number(r) + 1)
+}
+
+fn dec_resolution(r: &h3o::Resolution) -> Option<h3o::Resolution> {
+    if as_number(r) == 0 {
+        None
+    } else {
+        as_resolution((as_number(r) as i32 - 1) as u32)
+    }
 }
 
 impl Default for Game {
     fn default() -> Self {
-        Self::new()
+        Self::new(&h3o::Resolution::Two)
     }
 }
 

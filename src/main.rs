@@ -26,7 +26,7 @@ pub fn main() {
 
     let mut gui = three_d::GUI::new(&context);
     let mut gui_state = ui::GUIState::new(&camera);
-    let mut game = engine::game::Game::new().with_spawned_life();
+    let mut game = engine::game::Game::default().with_spawned_life();
 
     window.render_loop(move |mut frame_input| {
         frame_input

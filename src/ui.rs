@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use engine::game::as_number;
 use three_d::{Camera, OrbitControl};
 
 pub struct GUIState {
@@ -51,6 +52,18 @@ impl GUIState {
 
             if ui.add(Button::new("Fill")).clicked() {
                 game.spawn_life();
+            }
+
+            ui.separator();
+
+            ui.heading(format!("Grid fineness: {:?}", as_number(&game.resolution)));
+
+            if ui.add(Button::new("Increase")).clicked() {
+                game.increase_fineness();
+            }
+
+            if ui.add(Button::new("Decrease")).clicked() {
+                game.decrease_fineness();
             }
 
             ui.separator();
@@ -127,7 +140,7 @@ impl GUIState {
         {
             log::info!("clicked here: {:?}", (x, y, z));
             let Some(index) = engine::game::as_spherical(&(x as f64, y as f64, z as f64))
-                .map(|i| i.to_cell(engine::data::RESOLUTION))
+                .map(|i| i.to_cell(game.resolution))
             else {
                 log::info!("you clicked in a wrong place!");
                 return;
