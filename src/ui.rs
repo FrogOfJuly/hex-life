@@ -30,8 +30,7 @@ impl GUIState {
     pub fn draw_ui(&mut self, gui_context: &three_d::egui::Context, game: &mut engine::game::Game) {
         use three_d::egui::*;
 
-        SidePanel::right("Controls").show(gui_context, |ui| {
-            ui.label(" ");
+        Window::new("Interface").show(gui_context, |ui| {
             ui.label(" ");
 
             ui.hyperlink_to("Github", "https://frogofjuly.github.io/hex-life");
