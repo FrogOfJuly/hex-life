@@ -80,24 +80,18 @@ pub fn main() {
             Event::MousePress {
                 button,
                 position,
-                handled,
+                handled: false,
                 ..
-            } => {
-                if !handled{
-                    gui_state.handle_mouse_clicks(
-                        &model.geometry,
-                        &camera,
-                        &context,
-                        &mut game,
-                        (&position, &button),
-                    );
-                }
-                
-                log::info!("Click detected! event: {:?}", event);
-            }
+            } => gui_state.handle_mouse_clicks(
+                &model.geometry,
+                &camera,
+                &context,
+                &mut game,
+                (&position, &button),
+            ),
 
             Event::KeyPress { kind, .. } => gui_state.handle_keyboard_event(&mut camera, *kind),
-            _ => (),
+            _ => log::info!("Event: {:?}", event),
         });
 
         gui_state
