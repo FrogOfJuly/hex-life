@@ -36,6 +36,12 @@ pub fn main() {
     let mut game = engine::game::Game::new().with_spawned_life();
 
     window.render_loop(move |mut frame_input| {
+        frame_input
+            .events
+            .iter()
+            .filter(|event| matches!(event, Event::MouseMotion { .. }))
+            .for_each(|event| log::info!("Got event: {:?}", event));
+
         gui.update(
             &mut frame_input.events,
             frame_input.accumulated_time,
@@ -91,7 +97,7 @@ pub fn main() {
             ),
 
             Event::KeyPress { kind, .. } => gui_state.handle_keyboard_event(&mut camera, *kind),
-            _ => log::info!("Event: {:?}", event),
+            _ => (),
         });
 
         gui_state
