@@ -40,35 +40,40 @@ impl GUIState {
 
             ui.heading("Controls");
 
-            if ui
-                .add(Button::new(if self.pause { "Run  " } else { "Pause" }))
-                .clicked()
-            {
-                self.pause = !self.pause;
-            }
-            if ui.add(Button::new("Clear")).clicked() {
-                game.kill_everything();
-            }
+            ui.horizontal(|ui| {
+                ui.vertical(|ui| {
+                    if ui
+                        .add(Button::new(if self.pause { "Run  " } else { "Pause" }))
+                        .clicked()
+                    {
+                        self.pause = !self.pause;
+                    }
+                    if ui.add(Button::new("Clear")).clicked() {
+                        game.kill_everything();
+                    }
 
-            if ui.add(Button::new("Fill")).clicked() {
-                game.spawn_life();
-            }
+                    if ui.add(Button::new("Fill")).clicked() {
+                        game.spawn_life();
+                    }
+                });
 
-            ui.separator();
+                ui.vertical(|ui| {
+                    ui.heading(format!("Grid fineness: {:?}", as_number(&game.resolution)));
 
-            ui.heading(format!("Grid fineness: {:?}", as_number(&game.resolution)));
+                    if ui.add(Button::new("Increase")).clicked() {
+                        game.increase_fineness();
+                    }
 
-            if ui.add(Button::new("Increase")).clicked() {
-                game.increase_fineness();
-            }
-
-            if ui.add(Button::new("Decrease")).clicked() {
-                game.decrease_fineness();
-            }
+                    if ui.add(Button::new("Decrease")).clicked() {
+                        game.decrease_fineness();
+                    }
+                });
+            });
 
             ui.separator();
 
             ui.heading("Patterns");
+            ui.label("Choose pattern:");
 
             self.patterns.iter().for_each(|(k, _build_pattern)| {
                 let mut b = Button::new(k.to_string());
@@ -86,8 +91,8 @@ impl GUIState {
                     _ => (),
                 };
             });
-
-            ui.label("Choose pattern and left-click on the sphere to spawn it");
+            
+            ui.label("Left-click to spawn");
             ui.label("");
             ui.separator();
 
