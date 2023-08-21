@@ -78,7 +78,10 @@ pub fn main() {
 
         frame_input.events.iter().for_each(|event| match event {
             Event::MousePress {
-                button, position, ..
+                button,
+                position,
+                handled: false,
+                ..
             } => {
                 gui_state.handle_mouse_clicks(
                     &model.geometry,
