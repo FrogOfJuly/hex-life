@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use engine::game::as_number;
-use three_d::{Camera, OrbitControl};
+use three_d::{egui::output::OpenUrl, Camera, OrbitControl};
 
 pub struct GUIState {
     pub pause: bool,
@@ -39,7 +39,7 @@ impl GUIState {
                 log::info!("Clicked");
                 gui_context.output_mut(|o| {
                     log::info!("Opening?");
-                    o.open_url("https://www.google.com");
+                    o.open_url = Some(OpenUrl::new_tab("https://frogofjuly.github.io/hex-life"));
                     log::info!("Opened?");
                 });
             }
