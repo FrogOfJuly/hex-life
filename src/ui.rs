@@ -34,14 +34,22 @@ impl GUIState {
         Window::new("Game of life").show(gui_context, |ui| {
             ui.label(" ");
 
-            ui.hyperlink_to("Github", "https://frogofjuly.github.io/hex-life");
+            // ui.hyperlink_to("Github", "https://frogofjuly.github.io/hex-life");
+            if ui.add(Button::new("Github")).clicked() {
+                log::info!("Clicked");
+                gui_context.output_mut(|o| {
+                    log::info!("Opening?");
+                    o.open_url("https://www.google.com");
+                    log::info!("Opened?");
+                });
+            }
 
             ui.label(" ");
 
             ui.horizontal(|ui| {
                 ui.vertical(|ui| {
                     ui.heading("Controls");
-                    
+
                     if ui
                         .add(Button::new(if self.pause { "Run  " } else { "Pause" }))
                         .clicked()
