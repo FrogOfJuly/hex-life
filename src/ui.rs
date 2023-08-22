@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use engine::game::as_number;
-use three_d::{egui::output::OpenUrl, Camera, OrbitControl};
+use three_d::{Camera, OrbitControl};
 
 pub struct GUIState {
     pub pause: bool,
@@ -34,15 +34,8 @@ impl GUIState {
         Window::new("Game of life").show(gui_context, |ui| {
             ui.label(" ");
 
-            // ui.hyperlink_to("Github", "https://frogofjuly.github.io/hex-life");
-            if ui.add(Button::new("Github")).clicked() {
-                log::info!("Clicked");
-                gui_context.output_mut(|o| {
-                    log::info!("Opening?");
-                    o.open_url = Some(OpenUrl::new_tab("https://frogofjuly.github.io/hex-life"));
-                    log::info!("Opened?");
-                });
-            }
+            ui.hyperlink_to("Github", "https://frogofjuly.github.io/hex-life");
+            
 
             ui.label(" ");
 
