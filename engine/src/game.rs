@@ -115,6 +115,7 @@ impl Game {
             .unwrap()
             .compute_color(index.is_pentagon());
         let boundary = index.boundary();
+        log::info!("boundary: {:?}", boundary);
         if index.is_pentagon() {
             &[0, 1, 4, 1, 2, 4, 2, 3, 4][..]
         } else {
