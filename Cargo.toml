@@ -11,7 +11,7 @@ members = ["engine"]
 
 [dependencies]
 engine = { path = "engine" }
-three-d = { version = "0.16.0", features = ["egui-gui", "web-sys"] }
+three-d = { version = "0.16.0", features = ["egui-gui"] }
 log = "0.4"
 console_log = "0.2"
 
@@ -45,6 +45,7 @@ features = [
     "FileList",
     "FocusEvent",
     "HtmlCanvasElement",
+    "HtmlLinkElement",
     "HtmlElement",
     "HtmlInputElement",
     "InputEvent",
