@@ -116,25 +116,25 @@ impl Game {
             .compute_color(index.is_pentagon());
         let boundary = index.boundary();
         log::info!("boundary: {:?}", boundary);
-        if index.is_pentagon() {
-            &[0, 1, 4, 1, 2, 4, 2, 3, 4][..]
-        } else {
-            &[0, 2, 4, 2, 3, 4, 0, 1, 2, 0, 4, 5][..]
-        }
-        .iter()
-        .map(|&i| &boundary[i as usize])
-        .map(as_cartesian)
-        .zip([color].into_iter().cycle())
-        .collect()
-        // boundary
-        //     .iter()
-        //     .zip(boundary.iter().cycle().skip(1))
-        //     .zip([h3o::LatLng::from(*index)].into_iter().cycle())
-        //     .flat_map(|((i, j), c)| {
-        //         [as_cartesian(i), as_cartesian(j), as_cartesian(&c)].into_iter()
-        //     })
-        //     .zip([color].into_iter().cycle())
-        //     .collect()
+        // if index.is_pentagon() {
+        //     &[0, 1, 4, 1, 2, 4, 2, 3, 4][..]
+        // } else {
+        //     &[0, 2, 4, 2, 3, 4, 0, 1, 2, 0, 4, 5][..]
+        // }
+        // .iter()
+        // .map(|&i| &boundary[i as usize])
+        // .map(as_cartesian)
+        // .zip([color].into_iter().cycle())
+        // .collect()
+        boundary
+            .iter()
+            .zip(boundary.iter().cycle().skip(1))
+            .zip([h3o::LatLng::from(*index)].into_iter().cycle())
+            .flat_map(|((i, j), c)| {
+                [as_cartesian(i), as_cartesian(j), as_cartesian(&c)].into_iter()
+            })
+            .zip([color].into_iter().cycle())
+            .collect()
     }
 
     pub fn decrease_fineness(&mut self) {
