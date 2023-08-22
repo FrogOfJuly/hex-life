@@ -31,108 +31,110 @@ impl GUIState {
     pub fn draw_ui(&mut self, gui_context: &three_d::egui::Context, game: &mut engine::game::Game) {
         use three_d::egui::*;
 
-        Window::new("Game of life").show(gui_context, |ui| {
-            ui.label(" ");
+        Window::new("Game of life")
+            .movable(false)
+            .collapsible(true)
+            .show(gui_context, |ui| {
+                ui.label(" ");
 
-            ui.hyperlink_to("Github", "https://frogofjuly.github.io/hex-life");
-            
+                ui.hyperlink_to("Github", "https://frogofjuly.github.io/hex-life");
 
-            ui.label(" ");
+                ui.label(" ");
 
-            ui.horizontal(|ui| {
-                ui.vertical(|ui| {
-                    ui.heading("Controls");
+                ui.horizontal(|ui| {
+                    ui.vertical(|ui| {
+                        ui.heading("Controls");
 
-                    if ui
-                        .add(Button::new(if self.pause { "Run  " } else { "Pause" }))
-                        .clicked()
-                    {
-                        self.pause = !self.pause;
-                    }
-                    if ui.add(Button::new("Clear")).clicked() {
-                        game.kill_everything();
-                    }
+                        if ui
+                            .add(Button::new(if self.pause { "Run  " } else { "Pause" }))
+                            .clicked()
+                        {
+                            self.pause = !self.pause;
+                        }
+                        if ui.add(Button::new("Clear")).clicked() {
+                            game.kill_everything();
+                        }
 
-                    if ui.add(Button::new("Fill")).clicked() {
-                        game.spawn_life();
-                    }
+                        if ui.add(Button::new("Fill")).clicked() {
+                            game.spawn_life();
+                        }
+                    });
+
+                    ui.separator();
+
+                    ui.vertical(|ui| {
+                        ui.heading(format!("Grid fineness: {:?}", as_number(&game.resolution)));
+
+                        if ui.add(Button::new("Increase")).clicked() {
+                            game.increase_fineness();
+                        }
+
+                        if ui.add(Button::new("Decrease")).clicked() {
+                            game.decrease_fineness();
+                        }
+                    });
                 });
 
                 ui.separator();
 
-                ui.vertical(|ui| {
-                    ui.heading(format!("Grid fineness: {:?}", as_number(&game.resolution)));
+                ui.heading("Patterns");
+                ui.label("Choose pattern:");
 
-                    if ui.add(Button::new("Increase")).clicked() {
-                        game.increase_fineness();
-                    }
+                self.patterns.iter().for_each(|(k, _build_pattern)| {
+                    let mut b = Button::new(k.to_string());
+                    if let Some(pattern_name) = self.toggled_pattern {
+                        if pattern_name == *k {
+                            b = b.fill(Color32::from_rgb(57, 115, 172))
+                        }
+                    };
 
-                    if ui.add(Button::new("Decrease")).clicked() {
-                        game.decrease_fineness();
-                    }
+                    match (ui.add(b).clicked(), self.toggled_pattern) {
+                        (true, Some(toggled_pattern)) if toggled_pattern == *k => {
+                            self.toggled_pattern = None;
+                        }
+                        (true, _) => self.toggled_pattern = Some(*k),
+                        _ => (),
+                    };
                 });
+
+                ui.label("Left-click to spawn");
+                ui.label("");
+                ui.separator();
+
+                ui.label("* Use arrows or WASD to rotate the camera");
+                ui.label("* Use Enter or Space to pause/unpause");
+                ui.label("* Left-click on a sphere to mark a cell");
+                ui.label("* Right-click on a sphere to kill a cell");
+
+                ui.separator();
+
+                ui.heading("Rules");
+
+                ui.label("Survives");
+                ui.horizontal(|ui| {
+                    self.rules
+                        .survives
+                        .iter_mut()
+                        .enumerate()
+                        .for_each(|(i, v)| {
+                            ui.add(Checkbox::new(v, i.to_string()));
+                        });
+                });
+
+                ui.label("Emerges");
+                ui.horizontal(|ui| {
+                    self.rules
+                        .emerges
+                        .iter_mut()
+                        .enumerate()
+                        .for_each(|(i, v)| {
+                            ui.add(Checkbox::new(v, i.to_string()));
+                        });
+                });
+
+                ui.label(" ");
+                ui.label(" ");
             });
-
-            ui.separator();
-
-            ui.heading("Patterns");
-            ui.label("Choose pattern:");
-
-            self.patterns.iter().for_each(|(k, _build_pattern)| {
-                let mut b = Button::new(k.to_string());
-                if let Some(pattern_name) = self.toggled_pattern {
-                    if pattern_name == *k {
-                        b = b.fill(Color32::from_rgb(57, 115, 172))
-                    }
-                };
-
-                match (ui.add(b).clicked(), self.toggled_pattern) {
-                    (true, Some(toggled_pattern)) if toggled_pattern == *k => {
-                        self.toggled_pattern = None;
-                    }
-                    (true, _) => self.toggled_pattern = Some(*k),
-                    _ => (),
-                };
-            });
-
-            ui.label("Left-click to spawn");
-            ui.label("");
-            ui.separator();
-
-            ui.label("* Use arrows or WASD to rotate the camera");
-            ui.label("* Use Enter or Space to pause/unpause");
-            ui.label("* Left-click on a sphere to mark a cell");
-            ui.label("* Right-click on a sphere to kill a cell");
-
-            ui.separator();
-
-            ui.heading("Rules");
-
-            ui.label("Survives");
-            ui.horizontal(|ui| {
-                self.rules
-                    .survives
-                    .iter_mut()
-                    .enumerate()
-                    .for_each(|(i, v)| {
-                        ui.add(Checkbox::new(v, i.to_string()));
-                    });
-            });
-
-            ui.label("Emerges");
-            ui.horizontal(|ui| {
-                self.rules
-                    .emerges
-                    .iter_mut()
-                    .enumerate()
-                    .for_each(|(i, v)| {
-                        ui.add(Checkbox::new(v, i.to_string()));
-                    });
-            });
-
-            ui.label(" ");
-            ui.label(" ");
-        });
     }
 
     pub fn handle_mouse_clicks(
