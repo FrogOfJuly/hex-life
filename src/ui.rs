@@ -42,18 +42,21 @@ impl GUIState {
 
     #[cfg(target_arch = "wasm32")]
     pub fn get_fps(&self) -> f64 {
-        log::info!("frames: {:?}", self.fps);
-
         let seconds: f64 = self.fps.iter().cloned().map(|dur| dur * 1000.0).sum();
-        self.fps.len() as f64 / seconds as f64
+
+        log::info!(
+            "fps = {:?}/{:?}, frames: {:?}",
+            self.fps.len() as f64,
+            seconds,
+            self.fps
+        );
+        self.fps.len() as f64 / seconds
     }
 
     #[cfg(target_arch = "wasm32")]
     pub fn record_fps(&mut self) {
         if let Some(beg) = self.time_beg {
-            
             self.fps.push_back(performance_now() - beg);
-            
 
             if self.fps.len() >= Self::FRAME_INTERVAL as usize {
                 self.fps.pop_front();
@@ -81,7 +84,7 @@ impl GUIState {
                 ui.hyperlink_to("Github", "https://frogofjuly.github.io/hex-life");
 
                 #[cfg(target_arch = "wasm32")]
-                ui.label(format!("FPS: {:?}", self.get_fps()));
+                ui.label(format!("FPS: {:.1}", self.get_fps()));
 
                 ui.label(" ");
 
