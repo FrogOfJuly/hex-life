@@ -15,7 +15,7 @@ pub struct GUIState {
 }
 
 #[cfg(target_arch = "wasm32")]
-#[wasm_bindgen(inline_js = r#"
+#[wasm_bindgen::prelude::wasm_bindgen(inline_js = r#"
 export function performance_now() {
   return performance.now();
 }"#)]
