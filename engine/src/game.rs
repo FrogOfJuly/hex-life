@@ -109,7 +109,19 @@ impl Game {
     pub fn cell_to_colored_face_vtxes(
         &self,
         index: &h3o::CellIndex,
+        look_dir: [f32; 3],
     ) -> std::vec::Vec<((f64, f64, f64), [f32; 4])> {
+        if {
+            let (x2, y2, z2) = as_cartesian(&LatLng::from(*index));
+            let [x1, y1, z1] = look_dir;
+            x1 * x2 as f32 + y1 * y2 as f32 + z1 * z2 as f32
+        }
+        .abs()
+            < 0.01
+        {
+            return vec![];
+        }
+
         let color = self
             .get_unit(*index)
             .unwrap()
@@ -120,7 +132,6 @@ impl Game {
         } else {
             &[0, 2, 4, 2, 3, 4, 0, 1, 2, 0, 4, 5][..]
         }
-        
         .iter()
         .map(|&i| &boundary[i as usize])
         .map(|&x| LatLng::from(x))

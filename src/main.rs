@@ -47,7 +47,7 @@ pub fn main() {
         let (vtxes, colors) = game
             .indecies
             .iter()
-            .flat_map(|x| game.cell_to_colored_face_vtxes(x))
+            .flat_map(|x| game.cell_to_colored_face_vtxes(x, camera.view_direction().into()))
             .map(|((x, y, z), color)| {
                 (Vector3 { x, y, z }, {
                     let [r, g, b, a] = color.map(|x| {
