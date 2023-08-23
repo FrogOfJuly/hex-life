@@ -1,7 +1,4 @@
-use std::{
-    collections::{HashMap, VecDeque},
-    time::SystemTime,
-};
+use std::collections::{HashMap, VecDeque};
 
 use engine::game::as_number;
 use three_d::{Camera, OrbitControl};
@@ -13,8 +10,8 @@ pub struct GUIState {
     pub toggled_pattern: Option<&'static str>,
     pub rules: engine::rules::SimpleRules,
     pub orbit_control: OrbitControl,
-    pub fps: VecDeque<std::time::Duration>,
-    pub time_beg: Option<std::time::SystemTime>,
+    pub fps: VecDeque<f64>,
+    pub time_beg: Option<f64>,
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -27,7 +24,8 @@ extern "C" {
 }
 
 impl GUIState {
-    const FRAME_INTERVAL: u32 = 10;
+    #[cfg(target_arch = "wasm32")]
+    const FRAME_INTERVAL: usize = 10;
 
     pub fn new(camera: &Camera) -> Self {
         Self {
@@ -43,23 +41,23 @@ impl GUIState {
     }
 
     #[cfg(target_arch = "wasm32")]
-    pub fn get_fps(&self) -> f32 {
-        let secodns: u64 = self.fps.iter().cloned().map(|dur| dur.as_secs()).sum();
-        self.fps.len() as f32 / secodns as f32
+    pub fn get_fps(&self) -> f64 {
+        let secodns: f64 = self.fps.iter().cloned().map(|dur| dur * 1000.0).sum();
+        self.fps.len() as f64 / secodns as f64
     }
 
     #[cfg(target_arch = "wasm32")]
     pub fn record_fps(&mut self) {
         if let Some(beg) = self.time_beg {
-            if let Ok(dur) = SystemTime::now().duration_since(beg) {
-                self.fps.push_back(dur);
-            }
+            
+            self.fps.push_back(performance_now() - beg);
+            
 
             if self.fps.len() >= Self::FRAME_INTERVAL as usize {
                 self.fps.pop_front();
             }
         }
-        self.time_beg = Some(std::time::SystemTime::now())
+        self.time_beg = Some(performance_now())
     }
 
     pub fn toggle_pause(&mut self) {
