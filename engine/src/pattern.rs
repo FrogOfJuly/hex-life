@@ -4,6 +4,8 @@ use h3o::CellIndex;
 
 pub trait Pattern {
     fn as_cells(&self, center: &h3o::CellIndex) -> Vec<h3o::CellIndex>;
+
+    fn size(&self) -> usize;
 }
 
 struct SingleCell;
@@ -12,6 +14,12 @@ impl Pattern for SingleCell {
     fn as_cells(&self, center: &h3o::CellIndex) -> Vec<h3o::CellIndex> {
         vec![*center]
     }
+
+    fn size(&self) -> usize {
+        1
+    }
+
+    
 }
 
 struct Star;
@@ -24,6 +32,14 @@ impl Pattern for Star {
             .filter(|idx| idx != center)
             .collect()
     }
+
+    fn size(&self) -> usize {
+        7
+    }
+
+    
+
+    
 }
 
 struct SmallPulsar {
@@ -46,6 +62,11 @@ impl Pattern for SmallPulsar {
     fn as_cells(&self, center: &h3o::CellIndex) -> Vec<h3o::CellIndex> {
         transpose_pattern(self.pattern[0], *center, &self.pattern)
     }
+
+    fn size(&self) -> usize {
+        3
+    }
+    
 }
 
 struct MediumWiggler {
@@ -69,6 +90,12 @@ impl Pattern for MediumWiggler {
     fn as_cells(&self, center: &h3o::CellIndex) -> Vec<h3o::CellIndex> {
         transpose_pattern(self.pattern[0], *center, &self.pattern)
     }
+
+    fn size(&self) -> usize {
+        4
+    }
+
+    
 }
 
 struct SmallFlicker {
@@ -90,6 +117,12 @@ impl Pattern for SmallFlicker {
     fn as_cells(&self, center: &h3o::CellIndex) -> Vec<h3o::CellIndex> {
         transpose_pattern(self.pattern[0], *center, &self.pattern)
     }
+
+    fn size(&self) -> usize {
+        2
+    }
+
+    
 }
 
 struct RotatingTrio {
@@ -114,6 +147,13 @@ impl Pattern for RotatingTrio {
     fn as_cells(&self, center: &h3o::CellIndex) -> Vec<h3o::CellIndex> {
         transpose_pattern(self.pattern[0], *center, &self.pattern[1..])
     }
+
+    fn size(&self) -> usize {
+        3
+    }
+
+
+    
 }
 
 struct Blob {
@@ -141,9 +181,13 @@ impl Pattern for Blob {
     fn as_cells(&self, center: &h3o::CellIndex) -> Vec<h3o::CellIndex> {
         transpose_pattern(self.pattern[0], *center, &self.pattern[1..])
     }
+
+    fn size(&self) -> usize {
+        6
+    }
+
+    
 }
-
-
 
 struct LittleBlob {
     pattern: [CellIndex; 5],
@@ -168,8 +212,13 @@ impl Pattern for LittleBlob {
     fn as_cells(&self, center: &h3o::CellIndex) -> Vec<h3o::CellIndex> {
         transpose_pattern(self.pattern[0], *center, &self.pattern[1..])
     }
-}
 
+    fn size(&self) -> usize {
+        4
+    }
+
+    
+}
 
 struct Glider {
     pattern: [CellIndex; 11],
@@ -200,8 +249,13 @@ impl Pattern for Glider {
     fn as_cells(&self, center: &h3o::CellIndex) -> Vec<h3o::CellIndex> {
         transpose_pattern(self.pattern[0], *center, &self.pattern[1..])
     }
-}
 
+    fn size(&self) -> usize {
+        10
+    }
+
+    
+}
 
 fn transpose_pattern(src: CellIndex, dst: CellIndex, pattern: &[CellIndex]) -> Vec<CellIndex> {
     // Compute translation offset.
@@ -226,18 +280,28 @@ fn transpose_pattern(src: CellIndex, dst: CellIndex, pattern: &[CellIndex]) -> V
         .collect::<Vec<_>>()
 }
 
-pub fn create_pattern_map() -> HashMap<&'static str, Box<dyn Pattern>> {
-    let mut patterns: HashMap<&'static str, Box<dyn Pattern>> = HashMap::new();
+pub fn create_pattern_map() -> Vec<(&'static str, Box<dyn Pattern>)> {
+    let mut pattern_map: HashMap<&'static str, Box<dyn Pattern>> = HashMap::new();
 
-    patterns.insert("Single cell", Box::new(SingleCell));
-    patterns.insert("Star", Box::new(Star));
-    patterns.insert("Small pulsar", Box::new(SmallPulsar::new()));
-    patterns.insert("Small flicker", Box::new(SmallFlicker::new()));
-    patterns.insert("Rotating trio", Box::new(RotatingTrio::new()));
-    patterns.insert("Medium wiggler", Box::new(MediumWiggler::new()));
-    patterns.insert("Blob", Box::new(Blob::new()));
-    patterns.insert("Little blob", Box::new(LittleBlob::new()));
-    patterns.insert("Glider", Box::new(Glider::new()));
+    pattern_map.insert("Single cell", Box::new(SingleCell));
+    pattern_map.insert("Star", Box::new(Star));
+    pattern_map.insert("Small pulsar", Box::new(SmallPulsar::new()));
+    pattern_map.insert("Small flicker", Box::new(SmallFlicker::new()));
+    pattern_map.insert("Rotating trio", Box::new(RotatingTrio::new()));
+    pattern_map.insert("Medium wiggler", Box::new(MediumWiggler::new()));
+    pattern_map.insert("Blob", Box::new(Blob::new()));
+    pattern_map.insert("Little blob", Box::new(LittleBlob::new()));
+    pattern_map.insert("Glider", Box::new(Glider::new()));
+
+    let mut patterns: Vec<_> = pattern_map.into_iter().collect();
+
+    patterns.sort_by(|(k1, p1), (k2, p2)| {
+        if p1.size() != p2.size(){
+            p1.size().cmp(&p2.size())
+        }else{
+            k1.cmp(k2)
+        }
+    });
 
     patterns
 }

@@ -1,4 +1,4 @@
-use std::collections::{HashMap, VecDeque};
+use std::collections::VecDeque;
 
 use engine::game::as_number;
 use three_d::{Camera, OrbitControl};
@@ -6,7 +6,7 @@ use three_d::{Camera, OrbitControl};
 pub struct GUIState {
     pub pause: bool,
     pub skip_frame: bool,
-    patterns: HashMap<&'static str, Box<dyn engine::pattern::Pattern>>,
+    patterns: Vec<(&'static str, Box<dyn engine::pattern::Pattern>)>,
     pub toggled_pattern: Option<&'static str>,
     pub rules: engine::rules::SimpleRules,
     pub orbit_control: OrbitControl,
@@ -206,13 +206,17 @@ impl GUIState {
             if let (three_d::MouseButton::Left, Some(toggled_pattern)) =
                 (button, self.toggled_pattern)
             {
-                self.patterns.get(toggled_pattern).iter().for_each(|u| {
-                    u.as_cells(&index).iter().for_each(|index| {
-                        game.get_mut_unit(index)
-                            .into_iter()
-                            .for_each(|u| u.add_life());
-                    })
-                });
+                self.patterns
+                    .iter()
+                    .find(|(name, _pattern)| name == &toggled_pattern)
+                    .iter()
+                    .for_each(|(_name, u)| {
+                        u.as_cells(&index).iter().for_each(|index| {
+                            game.get_mut_unit(index)
+                                .into_iter()
+                                .for_each(|u| u.add_life());
+                        })
+                    });
             } else if let (three_d::MouseButton::Left, None) = (button, self.toggled_pattern) {
                 game.get_mut_unit(&index)
                     .into_iter()
