@@ -1,4 +1,7 @@
-use std::collections::HashMap;
+use std::{
+    collections::{HashMap, VecDeque},
+    time::SystemTime,
+};
 
 use engine::game::as_number;
 use three_d::{Camera, OrbitControl};
@@ -10,9 +13,13 @@ pub struct GUIState {
     pub toggled_pattern: Option<&'static str>,
     pub rules: engine::rules::SimpleRules,
     pub orbit_control: OrbitControl,
+    pub fps: VecDeque<std::time::Duration>,
+    pub time_beg: Option<std::time::SystemTime>,
 }
 
 impl GUIState {
+    const FRAME_INTERVAL: u32 = 10;
+
     pub fn new(camera: &Camera) -> Self {
         Self {
             pause: false,
@@ -21,7 +28,27 @@ impl GUIState {
             toggled_pattern: None,
             rules: engine::rules::SimpleRules::default(),
             orbit_control: OrbitControl::new(*camera.target(), 1.0, 100.0),
+            fps: VecDeque::new(),
+            time_beg: None,
         }
+    }
+
+    pub fn get_fps(&self) -> f32 {
+        let secodns: u64 = self.fps.iter().cloned().map(|dur| dur.as_secs()).sum();
+        self.fps.len() as f32 / secodns as f32
+    }
+
+    pub fn record_fps(&mut self) {
+        if let Some(beg) = self.time_beg {
+            if let Ok(dur) = SystemTime::now().duration_since(beg) {
+                self.fps.push_back(dur);
+            }
+
+            if self.fps.len() >= Self::FRAME_INTERVAL as usize {
+                self.fps.pop_front();
+            }
+        }
+        self.time_beg = Some(std::time::SystemTime::now())
     }
 
     pub fn toggle_pause(&mut self) {
@@ -31,6 +58,8 @@ impl GUIState {
     pub fn draw_ui(&mut self, gui_context: &three_d::egui::Context, game: &mut engine::game::Game) {
         use three_d::egui::*;
 
+        self.record_fps();
+
         Window::new("Game of life")
             .movable(false)
             .collapsible(true)
@@ -39,6 +68,7 @@ impl GUIState {
 
                 ui.hyperlink_to("Github", "https://frogofjuly.github.io/hex-life");
 
+                ui.label(format!("FPS: {:?}", self.get_fps()));
                 ui.label(" ");
 
                 ui.horizontal(|ui| {
