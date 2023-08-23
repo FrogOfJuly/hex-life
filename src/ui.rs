@@ -42,7 +42,7 @@ impl GUIState {
 
     #[cfg(target_arch = "wasm32")]
     pub fn get_fps(&self) -> f64 {
-        let seconds: f64 = self.fps.iter().cloned().map(|dur| dur * 1000.0).sum();
+        let seconds: f64 = self.fps.iter().cloned().sum();
 
         log::info!(
             "fps = {:?}/{:?}, frames: {:?}",
@@ -58,7 +58,7 @@ impl GUIState {
         if let Some(beg) = self.time_beg {
             self.fps.push_back(performance_now() - beg);
 
-            if self.fps.len() >= Self::FRAME_INTERVAL as usize {
+            if self.fps.len() > Self::FRAME_INTERVAL as usize {
                 self.fps.pop_front();
             }
         }
