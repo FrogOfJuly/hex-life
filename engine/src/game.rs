@@ -111,14 +111,12 @@ impl Game {
         index: &h3o::CellIndex,
         look_dir: [f32; 3],
     ) -> std::vec::Vec<((f64, f64, f64), [f32; 4])> {
-        if {
+        let invisible = {
             let (x2, y2, z2) = as_cartesian(&LatLng::from(*index));
             let [x1, y1, z1] = look_dir;
-            x1 * x2 as f32 + y1 * y2 as f32 + z1 * z2 as f32
-        }
-        .abs()
-            < 0.01
-        {
+            (x1 * x2 as f32 + y1 * y2 as f32 + z1 * z2 as f32) < -0.01
+        };
+        if invisible {
             return vec![];
         }
 
