@@ -17,6 +17,15 @@ pub struct GUIState {
     pub time_beg: Option<std::time::SystemTime>,
 }
 
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen(inline_js = r#"
+export function performance_now() {
+  return performance.now();
+}"#)]
+extern "C" {
+    fn performance_now() -> f64;
+}
+
 impl GUIState {
     const FRAME_INTERVAL: u32 = 10;
 
@@ -33,11 +42,13 @@ impl GUIState {
         }
     }
 
+    #[cfg(target_arch = "wasm32")]
     pub fn get_fps(&self) -> f32 {
         let secodns: u64 = self.fps.iter().cloned().map(|dur| dur.as_secs()).sum();
         self.fps.len() as f32 / secodns as f32
     }
 
+    #[cfg(target_arch = "wasm32")]
     pub fn record_fps(&mut self) {
         if let Some(beg) = self.time_beg {
             if let Ok(dur) = SystemTime::now().duration_since(beg) {
@@ -58,6 +69,7 @@ impl GUIState {
     pub fn draw_ui(&mut self, gui_context: &three_d::egui::Context, game: &mut engine::game::Game) {
         use three_d::egui::*;
 
+        #[cfg(target_arch = "wasm32")]
         self.record_fps();
 
         Window::new("Game of life")
@@ -68,7 +80,9 @@ impl GUIState {
 
                 ui.hyperlink_to("Github", "https://frogofjuly.github.io/hex-life");
 
+                #[cfg(target_arch = "wasm32")]
                 ui.label(format!("FPS: {:?}", self.get_fps()));
+
                 ui.label(" ");
 
                 ui.horizontal(|ui| {
