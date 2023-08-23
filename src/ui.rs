@@ -42,7 +42,10 @@ impl GUIState {
 
     #[cfg(target_arch = "wasm32")]
     pub fn get_fps(&self) -> f64 {
-        let seconds: f64 = self.fps.iter().cloned().sum() / 1000.0;
+        let seconds = {
+            let ms: f64 = self.fps.iter().cloned().sum();
+            ms / 1000.0
+        };
 
         log::info!(
             "fps = {:?}/{:?}, frames: {:?}",
