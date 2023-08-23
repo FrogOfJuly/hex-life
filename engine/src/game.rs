@@ -127,15 +127,6 @@ impl Game {
         .map(|ltln| as_cartesian(&ltln))
         .zip([color].into_iter().cycle())
         .collect()
-        // boundary
-        //     .iter()
-        //     .zip(boundary.iter().cycle().skip(1))
-        //     .zip([h3o::LatLng::from(*index)].into_iter().cycle())
-        //     .flat_map(|((i, j), c)| {
-        //         [as_cartesian(i), as_cartesian(j), as_cartesian(&c)].into_iter()
-        //     })
-        //     .zip([color].into_iter().cycle())
-        //     .collect()
     }
 
     pub fn decrease_fineness(&mut self) {

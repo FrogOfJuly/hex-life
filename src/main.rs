@@ -75,27 +75,23 @@ pub fn main() {
             ColorMaterial::default(),
         );
 
-        frame_input.events.iter().for_each(|event| match event {
-            Event::MousePress {
+        frame_input.events.iter().for_each(|event| {
+            if let Event::MousePress {
                 button,
                 position,
                 handled: false,
                 ..
-            } => gui_state.handle_mouse_clicks(
-                &model.geometry,
-                &camera,
-                &context,
-                &mut game,
-                (&position, &button),
-            ),
-
-            Event::KeyPress { kind, .. } => gui_state.handle_keyboard_event(&mut camera, *kind),
-            _ => (),
+            } = event
+            {
+                gui_state.handle_mouse_clicks(
+                    &model.geometry,
+                    &camera,
+                    &context,
+                    &mut game,
+                    (&position, &button),
+                )
+            }
         });
-
-        gui_state
-            .orbit_control
-            .handle_events(&mut camera, &mut frame_input.events);
 
         frame_input
             .screen()
@@ -104,6 +100,18 @@ pub fn main() {
             .write(|| gui.render());
 
         gui_state.update_game_state(&mut game);
+
+        //update camera
+
+        frame_input.events.iter().for_each(|event| {
+            if let Event::KeyPress { kind, .. } = event {
+                gui_state.handle_keyboard_event(&mut camera, *kind)
+            }
+        });
+
+        gui_state
+            .orbit_control
+            .handle_events(&mut camera, &mut frame_input.events);
 
         FrameOutput::default()
     });
